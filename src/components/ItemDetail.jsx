@@ -1,25 +1,39 @@
 import ItemCount from "./ItemCount";
 
-const ItemDetail = ({id, name, img, category, description, price, stock}) => {
-    return (
-        <article id="test">
-            <header>
-                <h2>{name}</h2>
-            </header>
-            <picture>
-                <img src={img} alt={name} />
-            </picture>
-            <section>
-                <p>Precio: ${price}</p>
-                <p>Category: {category}</p>
-                <p>Description: {description}</p>
-                <p>Stock: {stock}</p>
-            </section>
-            <footer>
-                <ItemCount initial={1} stock={stock} onAdd={(quantity) => console.log('Cantidad Agregada', quantity)} />
-            </footer>
-        </article>
-    )
-}
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Image,
+  Heading,
+  Text,
+  Stack,
+  Divider,
+} from "@chakra-ui/react";
+
+const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
+  return (
+      <Card maxW="md" border='4'>
+        <CardBody>
+          <Image src={img} alt={description} borderRadius="lg"/>
+          <Stack mt="6" spacing="3">
+            <Heading size="md">{name}</Heading>
+            <Text>{description}</Text>
+            <Text color="blue.600" fontSize="2xl">
+              ${price}
+            </Text>
+          </Stack>
+        </CardBody>
+        <Divider />
+        <CardFooter>
+          <ItemCount
+            initial={1}
+            stock={stock}
+            onAdd={(quantity) => console.log("Cantidad Agregada", quantity)}
+          />
+        </CardFooter>
+      </Card>
+  );
+};
 
 export default ItemDetail;

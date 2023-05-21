@@ -1,17 +1,18 @@
-import './App.css';
-import NavBar from './components/Navbar';
-import ItemListContainer from './components/ItemListContainer';
-import ItemDetailContainer from './components/ItemDetailContainer';
-
+import "./App.css";
+import * as React from 'react'
+import Navbar from "./components/Navbar";
+// import ItemListContainer from "./components/ItemListContainer";
+import ItemDetailContainer from "./components/ItemDetailContainer";
+import { ChakraProvider, Container } from "@chakra-ui/react";
 
 function App() {
   return (
-    <div>
-      <NavBar />
-      <ItemListContainer greeting={'WElcome'} />
+    <ChakraProvider>
+      <Navbar />
+      <Container>
       <ItemDetailContainer />
-    </div>
-
+      </Container>
+    </ChakraProvider>
   );
 }
 
