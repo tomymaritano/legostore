@@ -1,7 +1,6 @@
 {
   "name": "legoapp",
   "version": "1.0.0",
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
@@ -9,16 +8,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tmaritano/legostore.git"
-  },
   "author": "Tomas Maritano",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tmaritano/legostore/issues"
-  },
-  "homepage": "https://github.com/tmaritano/legostore#readme",
   "dependencies": {
     "@chakra-ui/react": "^2.6.1",
     "@emotion/react": "^11.11.0",
