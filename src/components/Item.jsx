@@ -8,6 +8,7 @@ import {
   Divider,
   CardFooter,
   Button,
+  Link
 
 } from "@chakra-ui/react";
 
@@ -28,7 +29,7 @@ const Item = ({ id, name, img, price, stock, description }) => {
           </CardBody>
           <Divider />
           <CardFooter>
-            <Button bgColor={"#F68024"}>Ver detalle</Button>
+            <Link to={`/item/${id}`}bgColor={"#F68024"}>Ver detalle</Link>
           </CardFooter>
         </Card>
   );
