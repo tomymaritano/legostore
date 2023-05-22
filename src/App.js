@@ -5,8 +5,6 @@ import ItemListContainer from "./components/ItemListContainer";
 import ItemDetailContainer from "./components/ItemDetailContainer";
 import { ChakraProvider, Container } from "@chakra-ui/react";
 import MainSlider from "./components/MainSlider";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   return (

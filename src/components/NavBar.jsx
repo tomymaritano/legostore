@@ -1,5 +1,6 @@
 import { Box, Flex, Link, IconButton, Image, Icon } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 import logo from "./assets/images/legologo.svg";
 import CartWidget from "./CartWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,22 +20,19 @@ const LegoNavBar = () => {
       justifyContent="space-evenly"
       alignItems="center"
     >
-      <Image src={logo} h={10} />
+      <Link as={NavLink} to="/" px={4}>
+        {" "}
+        <Image src={logo} h={10} />
+      </Link>
       <Flex display={{ base: "none", md: "flex" }}>
-        <Link to="/category/helmet" px={4} href="#">
+        <Link as={NavLink} to="/category/helmet" px={4} href="#">
           Helmet
         </Link>
-        <Link px={4} href="#">
-          Minifigures
+        <Link as={NavLink} to="/category/brickheadz" px={4} href="#">
+          Brickheadz
         </Link>
-        <Link px={4} href="#">
-          Bricks & Pieces
-        </Link>
-        <Link px={4} href="#">
-          Accessories
-        </Link>
-        <Link px={4} href="#">
-          Sale
+        <Link as={NavLink} to="/category/cars" px={4} href="#">
+          Cars
         </Link>
       </Flex>
       <Flex display={{ base: "none", md: "flex" }}>
@@ -47,9 +45,6 @@ const LegoNavBar = () => {
         <Link px={4} href="#">
           <CartWidget />
         </Link>
-        <Link px={4} href="#">
-          Sale
-        </Link>
       </Flex>
       <IconButton
         icon={<FaBars />}
@@ -57,7 +52,7 @@ const LegoNavBar = () => {
         display={{ base: "block", md: "none" }}
       />
     </Flex>
-  );
+  );1
 };
 
 export default LegoNavBar;

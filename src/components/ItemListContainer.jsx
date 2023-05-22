@@ -12,7 +12,7 @@ const ItemListContainer = ({ greeting }) => {
 
   useEffect(() => {
     const asyncFunc = categoryId ? getProductsByCategory : getProducts;
-    asyncFunc()
+    asyncFunc(categoryId)
       .then((response) => {
         setProducts(response);
       })
@@ -23,6 +23,7 @@ const ItemListContainer = ({ greeting }) => {
 
   return (
     <Container maxW="100%">
+      <h1>{greeting}</h1>
       <ItemList products={products} />
     </Container>
   );
