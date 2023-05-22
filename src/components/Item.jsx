@@ -33,7 +33,7 @@ const Item = ({ id, name, img, price, stock, description, category }) => {
         <Stack mt="3" spacing="3">
           <Heading size="sm">{name}</Heading>
           <Text color="blue.600" fontSize="2xl">
-            ${price}
+            {price}kr.
           </Text>
           <Text color="blue.500" fontSize="sm">
             Avaiable Stock {stock}
