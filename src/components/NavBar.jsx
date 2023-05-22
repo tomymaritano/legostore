@@ -1,32 +1,42 @@
-import {
-  Box,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button
-} from "@chakra-ui/react";
-import CartWidget from "./CartWidget";
+import { Box, Flex, Link, IconButton, Image } from "@chakra-ui/react";
+import { FaBars } from "react-icons/fa";
+import logo from "./assets/images/legologo.svg"
 
-const NavBar = () => {
+const LegoNavBar = () => {
   return (
-    <Box as="nav" bg="rgb(255, 207, 1)" p='4'>
-      <Flex alignItems="center" justifyContent="space-between">
-        <Menu>
-          <MenuButton as={Button} mr={6}>
-            Menu
-          </MenuButton>
-          <MenuList>
-            <MenuItem>Home</MenuItem>
-            <MenuItem>Shop</MenuItem>
-            <MenuItem>Contact</MenuItem>
-          </MenuList>
-        </Menu>
-        <CartWidget />
+    <Flex
+      bg="rgb(255, 207, 1)"
+      color="black"
+      py={4}
+      px={8}
+      justifyContent="space-between"
+      alignItems="center"
+    >
+        <Image src={logo} h={10} />
+      <Flex display={{ base: "none", md: "flex" }}>
+        <Link px={4} href="#">
+          Sets
+        </Link>
+        <Link px={4} href="#">
+          Minifigures
+        </Link>
+        <Link px={4} href="#">
+          Bricks & Pieces
+        </Link>
+        <Link px={4} href="#">
+          Accessories
+        </Link>
+        <Link px={4} href="#">
+          Sale
+        </Link>
       </Flex>
-    </Box>
+      <IconButton
+        icon={<FaBars />}
+        aria-label="Open Menu"
+        display={{ base: "block", md: "none" }}
+      />
+    </Flex>
   );
 };
 
-export default NavBar;
+export default LegoNavBar;

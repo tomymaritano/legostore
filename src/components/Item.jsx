@@ -13,12 +13,11 @@ import {
 
 const Item = ({ id, name, img, price, stock, description }) => {
   return (
-        <Card m={2}>
+        <Card display={'flex'} alignItems={'center'} justifyContent={'center'} m={2}>
           <CardBody>
-            <Image src={img} alt={name} borderRadius="sm" width='20vh'/>
+            <Image src={img} alt={name} borderRadius="sm" width='20vh' border={'1'} height={280}/>
             <Stack mt="3" spacing="3">
               <Heading size="sm">{name}</Heading>
-              <Text fontSize="xs">{description}</Text>
               <Text color="blue.600" fontSize="2xl">
                 ${price}
               </Text>
