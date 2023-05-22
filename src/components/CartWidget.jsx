@@ -1,10 +1,11 @@
 import Cart from "./assets/images/shopping-cart-outline.svg";
+import { Box } from "@chakra-ui/react";
 
 const CartWidget = () => {
   return (
-    <div>
-      <img src={Cart} alt="Cart" width={20} /> 0
-    </div>
+    <Box>
+      <img src={Cart} alt="Cart" width={20}/>
+    </Box>
   );
 };
 

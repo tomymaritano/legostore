@@ -17,8 +17,7 @@ const ItemListContainer = ({ greeting }) => {
   }, []);
 
   return (
-    <Container>
-      <h1>{greeting}</h1>
+    <Container maxW='100%'>
       <ItemList products={products} />
     </Container>
   );

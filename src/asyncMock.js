@@ -26,6 +26,24 @@ const products = [
         stock: 20,
         description: 'This isnt the first book on Java application architecture. No doubt it wont be the last. But rest assured, this title is different. The way we develop Java applications is about to change, and this title explores the new way of Java application architecture.',
     },
+    {
+        id: '4',
+        name: 'Linux Book',
+        price: 25,
+        category: 'books',
+        img: 'https://m.media-amazon.com/images/I/51wsppur6tL._SX198_BO1,204,203,200_QL40_ML2_.jpg',
+        stock: 20,
+        description: 'This isnt the first book on Java application architecture. No doubt it wont be the last. But rest assured, this title is different. The way we develop Java applications is about to change, and this title explores the new way of Java application architecture.',
+    },
+    {
+        id: '5',
+        name: 'Ethical Hacking',
+        price: 25,
+        category: 'books',
+        img: 'https://m.media-amazon.com/images/I/51wsppur6tL._SX198_BO1,204,203,200_QL40_ML2_.jpg',
+        stock: 20,
+        description: 'This isnt the first book on Java application architecture. No doubt it wont be the last. But rest assured, this title is different. The way we develop Java applications is about to change, and this title explores the new way of Java application architecture.',
+    },
 ];
 
 export const getProducts = () => {

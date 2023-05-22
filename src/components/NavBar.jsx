@@ -5,19 +5,14 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Button,
-  Container
+  Button
 } from "@chakra-ui/react";
 import CartWidget from "./CartWidget";
-import ItemListContainer from "./ItemListContainer";
 
 const NavBar = () => {
   return (
-    <Container>
-      <Flex as="nav" alignItems="center" justifyContent="space-between">
-        <Box fontSize="lg" fontWeight="bold">
-          Ecommerce
-        </Box>
+    <Box as="nav" bg="rgb(255, 207, 1)" p='4'>
+      <Flex alignItems="center" justifyContent="space-between">
         <Menu>
           <MenuButton as={Button} mr={6}>
             Menu
@@ -29,10 +24,8 @@ const NavBar = () => {
           </MenuList>
         </Menu>
         <CartWidget />
-        <ItemListContainer greeting="Welcome" />
       </Flex>
-    </Container>
-
+    </Box>
   );
 };
 
