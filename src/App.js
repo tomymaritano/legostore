@@ -5,6 +5,7 @@ import ItemListContainer from "./components/ItemListContainer";
 import ItemDetailContainer from "./components/ItemDetailContainer";
 import { ChakraProvider, Container } from "@chakra-ui/react";
 import MainSlider from "./components/MainSlider";
+import Footer from "./components/footer";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/item/:itemId" element={<ItemDetailContainer />}/>
           <Route path="*" element={<h1>404 NOT FOUND</h1>}/>
         </Routes>
+        <Footer />
       </BrowserRouter>
     </ChakraProvider>
   );

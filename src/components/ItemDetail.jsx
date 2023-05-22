@@ -20,13 +20,13 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
     setQuantityAdded(quantity);
   };
   return (
-    <Card maxW="sm" border="1">
+    <Card maxW="md" border="4">
       <CardBody display={"flex"} flexDirection={'column'} justifyContent={'center'} alignItems={"center"}>
-        <Image width={'50%'} src={img} alt={description} borderRadius="lg" />
+        <Image width={'40%'} src={img} alt={description} borderRadius="lg" />
         <Stack mt="3" spacing="3">
-          <Heading size="md">{name}</Heading>
+          <Heading size="sm">{name}</Heading>
           <Text>{description}</Text>
-          <Text color="blue.600" fontSize="2xl">
+          <Text color="blue.600" fontSize="md">
             {price}kr.
           </Text>
         </Stack>

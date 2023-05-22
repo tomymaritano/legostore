@@ -20,13 +20,13 @@ const ItemCount = ({ stock, initial, onAdd }) => {
     <Container justifyContent='center' align="center">
       <Box m="2">
         <Stack justifyContent='center' align="center" direction="row" spacing={4}>
-          <Button bgColor={"#f68024"} onClick={decrement}>-</Button>
-          <Text fontSize="lg" as={"b"}>{quantity}</Text>
-          <Button bgColor={"#f68024"} onClick={increment}>+</Button>
+          <Button size={"sm"} bgColor={"#f68024"} onClick={decrement}>-</Button>
+          <Text fontSize="md" as={"b"}>{quantity}</Text>
+          <Button size={"sm"} bgColor={"#f68024"} onClick={increment}>+</Button>
         </Stack>
       </Box>
       <Box>
-        <Button bgColor={"#f68024"} onClick={() => onAdd(quantity)} disabled={!stock}>
+        <Button size={"sm"} bgColor={"#f68024"} onClick={() => onAdd(quantity)} disabled={!stock}>
           Agregar al Carrito
         </Button>
       </Box>
