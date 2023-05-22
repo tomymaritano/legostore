@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Box, Button, Stack } from "@chakra-ui/react";
+import { Container, Box, Button, Stack, Text } from "@chakra-ui/react";
 const ItemCount = ({ stock, initial, onAdd }) => {
   const [quantity, setQuantity] = useState(initial);
 
@@ -20,13 +20,13 @@ const ItemCount = ({ stock, initial, onAdd }) => {
     <Container justifyContent='center' align="center">
       <Box m="2">
         <Stack justifyContent='center' align="center" direction="row" spacing={4}>
-          <Button onClick={decrement}>-</Button>
-          <h4>{quantity}</h4>
-          <Button onClick={increment}>+</Button>
+          <Button bgColor={"#f68024"} onClick={decrement}>-</Button>
+          <Text fontSize="lg" as={"b"}>{quantity}</Text>
+          <Button bgColor={"#f68024"} onClick={increment}>+</Button>
         </Stack>
       </Box>
       <Box>
-        <Button onClick={() => onAdd(quantity)} disabled={!stock}>
+        <Button bgColor={"#f68024"} onClick={() => onAdd(quantity)} disabled={!stock}>
           Agregar al Carrito
         </Button>
       </Box>
