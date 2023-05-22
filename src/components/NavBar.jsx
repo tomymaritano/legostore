@@ -15,10 +15,11 @@ const LegoNavBar = () => {
     <Flex
       bg="rgb(255, 207, 1)"
       color="black"
-      py={4}
-      px={8}
+      py={3}
+      px={1}
       justifyContent="space-evenly"
       alignItems="center"
+      fontSize={"sm"}
     >
       <Link as={NavLink} to="/" px={4}>
         {" "}

@@ -6,11 +6,13 @@ import ItemDetailContainer from "./components/ItemDetailContainer";
 import { ChakraProvider, Container } from "@chakra-ui/react";
 import MainSlider from "./components/MainSlider";
 import Footer from "./components/footer";
+import ExtraNavbar from "./components/ExtraNavbar";
 
 function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
+        <ExtraNavbar />
         <NavBar />
         <MainSlider />
         <Routes>
