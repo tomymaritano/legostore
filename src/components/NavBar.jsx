@@ -22,17 +22,16 @@ const LegoNavBar = () => {
       fontSize={"sm"}
     >
       <Link as={NavLink} to="/" px={4}>
-        {" "}
         <Image src={logo} h={10} />
       </Link>
       <Flex display={{ base: "none", md: "flex" }}>
-        <Link as={NavLink} to="/category/helmet" px={4} href="#">
+        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/helmet" px={4} href="#">
           Helmet
         </Link>
-        <Link as={NavLink} to="/category/brickheadz" px={4} href="#">
+        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/brickheadz" px={4} href="#">
           Brickheadz
         </Link>
-        <Link as={NavLink} to="/category/cars" px={4} href="#">
+        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/cars" px={4} href="#">
           Cars
         </Link>
       </Flex>
@@ -53,7 +52,8 @@ const LegoNavBar = () => {
         display={{ base: "block", md: "none" }}
       />
     </Flex>
-  );1
+  );
+  1;
 };
 
 export default LegoNavBar;

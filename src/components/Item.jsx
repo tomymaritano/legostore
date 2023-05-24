@@ -20,13 +20,10 @@ const Item = ({ id, name, img, price, stock, description, category }) => {
         <Image
           src={img}
           alt={name}
-          borderRadius="sm"
-          width="60%"
-          height="60%"
-          border={"1"}
+          border={"none"}
         />
         <Stack mt="3" spacing="3">
-          <Heading size="sm">{name}</Heading>
+          <Heading size="sm">{name} {category}</Heading>
           <Text fontSize="sm">
            {description}
           </Text>

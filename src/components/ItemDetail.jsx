@@ -1,5 +1,5 @@
 import ItemCount from "./ItemCount";
-import { useState } from "react"
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import {
@@ -10,6 +10,8 @@ import {
   Heading,
   Text,
   Stack,
+  Link,
+  Button,
   Divider,
 } from "@chakra-ui/react";
 
@@ -21,11 +23,17 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
   };
   return (
     <Card maxW="md" border="4">
-      <CardBody display={"flex"} flexDirection={'column'} justifyContent={'center'} alignItems={"center"}>
-        <Image width={'40%'} src={img} alt={description} borderRadius="lg" />
+      <CardBody
+        display={"flex"}
+        flexDirection={"column"}
+        justifyContent={"center"}
+        alignItems={"center"}
+      >
+        <Image width={"40%"} src={img} alt={description} borderRadius="lg" />
         <Stack mt="3" spacing="3">
           <Heading size="sm">{name}</Heading>
           <Text>{description}</Text>
+          <Text>{category}</Text>
           <Text color="blue.600" fontSize="md">
             {price}kr.
           </Text>
@@ -34,13 +42,13 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
       <Divider />
       <CardFooter>
         {quantityAdded > 0 ? (
-          <Link to="/cart">Finalizar Compra</Link>
+          <Button bgColor={'#f68024'}>
+            <Link as={NavLink} to="/cart">
+              Finalizar Compra
+            </Link>
+          </Button>
         ) : (
-          <ItemCount
-            initial={1}
-            stock={stock}
-            onAdd={(quantity) => console.log("Cantidad Agregada", quantity)}
-          />
+          <ItemCount initial={1} stock={stock} onAdd={handleOnAdd} />
         )}
       </CardFooter>
     </Card>
