@@ -10,7 +10,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 
 library.add(faHeart);
 
-const LegoNavBar = () => {
+const NavBar = () => {
   return (
     <Flex
       bg="rgb(255, 207, 1)"
@@ -56,4 +56,4 @@ const LegoNavBar = () => {
   1;
 };
 
-export default LegoNavBar;
+export default NavBar;

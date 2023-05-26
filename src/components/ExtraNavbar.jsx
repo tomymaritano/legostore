@@ -27,7 +27,7 @@ const ExtraNavbar = () => {
       alignItems={"center"}
     >
       <Flex>
-        <Button leftIcon={<ArrowBackIcon />} size={'xs'} bgColor={'blue.100'} fontSize={"xs"}>Play Zone</Button>
+        <Button leftIcon={<ArrowBackIcon />} size={'xs'} bgColor={'#ABD9FF'} borderRadius={'none'} fontSize={"xs"}>Play Zone</Button>
       </Flex>
       <Flex>
         <Text fontSize={"xs"}>
