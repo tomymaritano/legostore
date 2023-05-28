@@ -1,4 +1,4 @@
-import ItemCount from "./ItemCount";
+import ItemCount from "../ItemCount/ItemCount";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 

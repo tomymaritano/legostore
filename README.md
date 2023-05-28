@@ -1,6 +1,18 @@
 # Getting Started with Create React App
-
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+# This proyect is using Chakra UI as a library to have a good user interface.
+
+[Chakra UI](https://chakra-ui.com/)
+
+# ALso this proyect is an ecommerce of lego toys.
+
+# If you are cloning this proyect, dont forget to:
+### npm install
+For get all dependencies installed from Node_modules.
+
+
+
 
 ## Available Scripts
 

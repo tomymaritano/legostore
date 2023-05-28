@@ -1,4 +1,4 @@
-import Cart from "./assets/images/shopping-cart-outline.svg";
+import Cart from "../assets/images/shopping-cart-outline.svg";
 import { Box } from "@chakra-ui/react";
 
 const CartWidget = () => {

@@ -1,13 +1,13 @@
 import * as React from "react";
-import NavBar from "./components/Navbar";
+import NavBar from "./components/Navbars/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ItemListContainer from "./components/ItemListContainer";
-import ItemDetailContainer from "./components/ItemDetailContainer";
+import ItemListContainer from "./components/ItemListContainer/ItemListContainer";
+import ItemDetailContainer from "./components/ItemDetailContainer/ItemDetailContainer";
 import { ChakraProvider, Container } from "@chakra-ui/react";
-import MainSlider from "./components/MainSlider";
-import Footer from "./components/footer";
-import ExtraNavbar from "./components/ExtraNavbar";
-import { CartProvider } from "./components/CartContext";
+import MainSlider from "./components/MainSlider/MainSlider";
+import Footer from "./components/Footer/footer";
+import ExtraNavbar from "./components/Navbars/ExtraNavbar";
+import { CartProvider } from "./components/CartContext/CartContext";
 
 function App() {
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getProducts, getProductsByCategory } from "../asyncMock";
-import ItemList from "./ItemList";
+import { getProducts, getProductsByCategory } from "../Service/asyncMock";
+import ItemList from "../ItemList/ItemList";
 import { Container } from "@chakra-ui/react";
 
 import { useParams } from "react-router-dom";

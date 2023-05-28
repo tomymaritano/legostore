@@ -1,8 +1,8 @@
 import { Box, Flex, Link, IconButton, Image, Icon } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
-import logo from "./assets/images/legologo.svg";
-import CartWidget from "./CartWidget";
+import logo from "../assets/images/legologo.svg";
+import CartWidget from "../CartWidget/CartWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
