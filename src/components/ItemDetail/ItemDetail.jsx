@@ -1,6 +1,7 @@
 import ItemCount from "../ItemCount/ItemCount";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { CartContext } from "../CartContext/CartContext";
 
 import {
   Card,
@@ -18,8 +19,16 @@ import {
 const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
   const [quantityAdded, setQuantityAdded] = useState(0);
 
+  const { addItem } = useContext(CartContext)
   const handleOnAdd = (quantity) => {
     setQuantityAdded(quantity);
+
+    const item = {
+      id, name, price
+    }
+
+    addItem(item, quantity)
+
   };
   return (
     <Card maxW="md" border="4">

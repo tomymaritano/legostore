@@ -13,6 +13,7 @@ import {
 
 import { NavLink } from "react-router-dom";
 
+
 const Item = ({ id, name, img, price, stock, description, category }) => {
   return (
     <Card display={"flex"} justifyContent={"space-evenly"} alignItems={"center"} m={2}>
