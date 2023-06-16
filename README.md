@@ -5,7 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 [Chakra UI](https://chakra-ui.com/)
 
-# ALso this proyect is an ecommerce of lego toys.
+# Also this proyect is a Lego ecommerce.
 
 # If you are cloning this proyect, dont forget to:
 ### npm install
