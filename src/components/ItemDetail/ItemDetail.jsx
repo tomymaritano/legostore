@@ -20,6 +20,7 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
   const [quantityAdded, setQuantityAdded] = useState(0);
 
   const { addItem } = useContext(CartContext)
+
   const handleOnAdd = (quantity) => {
     setQuantityAdded(quantity);
 
@@ -29,7 +30,8 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
 
     addItem(item, quantity)
 
-  };
+  }
+
   return (
     <Card maxW="md" border="4">
       <CardBody
@@ -53,7 +55,7 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
         {quantityAdded > 0 ? (
           <Button bgColor={'#f68024'}>
             <Link as={NavLink} to="/cart">
-              Finalizar Compra
+              End shopping
             </Link>
           </Button>
         ) : (
