@@ -10,7 +10,7 @@ const Cart = () => {
     return (
       <div>
         <h1>No hay items en el carrito</h1>
-        <Link to="/" classname="Option">
+        <Link to="/" className="Option">
           Productos
         </Link>
       </div>
