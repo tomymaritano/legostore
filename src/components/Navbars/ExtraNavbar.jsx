@@ -44,7 +44,6 @@ const ExtraNavbar = () => {
       </Flex>
     </Flex>
   );
-  1;
 };
 
 export default ExtraNavbar;

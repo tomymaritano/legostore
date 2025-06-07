@@ -76,7 +76,6 @@ const NavBar = () => {
       />
     </Flex>
   );
-  1;
 };
 
 export default NavBar;
