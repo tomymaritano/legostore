@@ -18,7 +18,7 @@ const MainSlider = () => {
       maxW={"100%"}
       maxH={"container.xl"}
       bgImage={
-        "https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webply&quality=80&width=1600&height=500&dpr=1"
+        "https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webp&quality=80&width=1600&height=500&dpr=1"
       }
       backgroundRepeat={"no-repeat"}
       backgroundPosition="center"
