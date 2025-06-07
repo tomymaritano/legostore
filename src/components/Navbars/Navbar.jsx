@@ -1,4 +1,20 @@
-import { Box, Flex, Link, IconButton, Image, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Link,
+  IconButton,
+  Image,
+  Icon,
+  useDisclosure,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  VStack,
+} from "@chakra-ui/react";
+import React from "react";
 import { FaBars, FaShoppingBag, FaShoppingBasket } from "react-icons/fa";
 import cart from "../assets/images/shopping-cart-outline.svg";
 import { NavLink } from "react-router-dom";
@@ -12,7 +28,11 @@ import { SearchIcon } from "@chakra-ui/icons";
 library.add(faHeart);
 
 const NavBar = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
+
   return (
+    <>
     <Flex
       bg="rgb(255, 207, 1)"
       color="black"
@@ -73,10 +93,31 @@ const NavBar = () => {
         icon={<FaBars />}
         aria-label="Open Menu"
         display={{ base: "block", md: "none" }}
+        onClick={onOpen}
+        ref={btnRef}
       />
     </Flex>
+    <Drawer
+      isOpen={isOpen}
+      placement="left"
+      onClose={onClose}
+      finalFocusRef={btnRef}
+    >
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader>Menu</DrawerHeader>
+        <DrawerBody>
+          <VStack align="start" spacing={4}>
+            <Link as={NavLink} to="/category/helmet" onClick={onClose} textTransform="uppercase" fontWeight="bold">Helmet</Link>
+            <Link as={NavLink} to="/category/brickheadz" onClick={onClose} textTransform="uppercase" fontWeight="bold">Brickheadz</Link>
+            <Link as={NavLink} to="/category/cars" onClick={onClose} textTransform="uppercase" fontWeight="bold">Cars</Link>
+          </VStack>
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
+    </>
   );
-  1;
 };
 
 export default NavBar;
