@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ItemListContainer from "./components/ItemListContainer/ItemListContainer";
 import ItemDetailContainer from "./components/ItemDetailContainer/ItemDetailContainer";
 import Cart from "./components/Cart/Cart";
-import { ChakraProvider } from "@chakra-ui/react";
 import { CartProvider } from "./components/CartContext/CartContext";
 import NotFound from "./components/NotFound/NotFound";
 import Layout from "./components/Layout/Layout";
@@ -12,13 +11,11 @@ import Wishlist from "./components/Wishlist/Wishlist";
 // Wrapper para poder usar useLocation
 function AppWrapper() {
   return (
-    <ChakraProvider>
-      <BrowserRouter>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
-      </BrowserRouter>
-    </ChakraProvider>
+    <BrowserRouter>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </BrowserRouter>
   );
 }
 function AppContent() {
