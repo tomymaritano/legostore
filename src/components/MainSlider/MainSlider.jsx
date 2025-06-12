@@ -1,63 +1,77 @@
 import {
-  Container,
+  Box,
   Text,
-  Image,
   Heading,
   Stack,
-  Box,
   Button,
   ButtonGroup,
 } from "@chakra-ui/react";
-
 import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { motion } from "framer-motion";
+
+// motion wrapper para Box (Chakra + Framer)
+const MotionBox = motion(Box);
 
 const MainSlider = () => {
   return (
-    <Container
-      display={"flex"}
-      maxW={"100%"}
-      maxH={"container.xl"}
+    <Box
+      position="relative"
+      w="100%"
+      h={{ base: "400px", md: "500px", lg: "600px" }}
       bgImage={
-        "https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webply&quality=80&width=1600&height=500&dpr=1"
+        "url(https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webply&quality=80&width=1600&height=500&dpr=1)"
       }
-      backgroundRepeat={"no-repeat"}
+      backgroundRepeat="no-repeat"
+      backgroundSize="cover"
       backgroundPosition="center"
+      display="flex"
+      alignItems="center"
     >
-      <Box m={"10%"} pl={20}>
-        <Stack spacing={3}>
-          <Heading color={"white"} as={"h1"} size={"2xl"} noOfLines={1}>
+      <MotionBox
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        bg="rgba(0, 0, 0, 0.4)"
+        backdropFilter="blur(4px)"
+        borderRadius="md"
+        p={{ base: 6, md: 10 }}
+        m={{ base: 4, md: 10 }}
+        maxW="lg"
+      >
+        <Stack spacing={4}>
+          <Heading color="white" as="h1" size="2xl" noOfLines={2}>
             Calling all dreamers
           </Heading>
-        </Stack>
-        <Stack spacing={3}>
-          <Text color={"white"} fontSize="sm">
+          <Text color="white" fontSize="md">
             To celebrate the launch of LEGO® DREAMZzz™, we’ve launched a
-            competition for your child <br /> to become one of our Chief Dream
+            competition for your child to become one of our Chief Dream
             Creators!
           </Text>
-        </Stack>
-        <Stack mt={5} spacing={3}>
-          <ButtonGroup gap="1">
+          <ButtonGroup gap={3} mt={4}>
             <Button
-              size={"md"}
+              size="md"
               bgColor="white"
               rightIcon={<ArrowForwardIcon />}
               variant="outline"
+              _hover={{ bg: "gray.100", transform: "translateY(-2px)" }}
+              transition="all 0.2s ease-in-out"
             >
               Learn more
             </Button>
             <Button
-              size={"md"}
+              size="md"
               bgColor="white"
               rightIcon={<ArrowForwardIcon />}
               variant="outline"
+              _hover={{ bg: "gray.100", transform: "translateY(-2px)" }}
+              transition="all 0.2s ease-in-out"
             >
               Enter now
             </Button>
           </ButtonGroup>
         </Stack>
-      </Box>
-    </Container>
+      </MotionBox>
+    </Box>
   );
 };
 

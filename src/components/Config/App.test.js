@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import App from '../../App';
+import theme from './theme';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+const customTheme = extendTheme(theme);
+
+test('renders navbar link', () => {
+  render(
+    <ChakraProvider theme={customTheme}>
+      <App />
+    </ChakraProvider>
+  );
+  expect(screen.getByText(/Helmet/i)).toBeInTheDocument();
 });
