@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getProducts, getProductsByCategory } from "../Service/asyncMock";
-import ItemList from "../ItemList/ItemList";
+import ProductList from "../ProductList/ProductList";
 import {
   Container,
   Heading,
@@ -33,7 +33,7 @@ const ItemListContainer = ({ greeting }) => {
         setProducts(response);
       } catch (err) {
         console.error(err);
-        setError("Failed to load products.");
+        setError("Error al cargar productos.");
       } finally {
         setLoading(false);
       }
@@ -43,10 +43,19 @@ const ItemListContainer = ({ greeting }) => {
   }, [categoryId]);
 
   return (
-    <Container maxW="100%" py={6}>
-      <Heading as="h1" size="xl" mb={6} textAlign="center">
-        {greeting}
-      </Heading>
+    <Container maxW="1920px" py={{ base: 6, md: 6 }}>
+      {greeting && (
+        <Heading
+          as="h1"
+          size="xl"
+          mb={6}
+          textAlign="center"
+          color="gray.700"
+          fontWeight="extrabold"
+        >
+          {greeting}
+        </Heading>
+      )}
 
       {loading ? (
         <Center py={10}>
@@ -54,19 +63,24 @@ const ItemListContainer = ({ greeting }) => {
         </Center>
       ) : error ? (
         <Center py={10}>
-          <Text color="red.500">{error}</Text>
+          <Text color="red.500" fontSize="lg">
+            {error}
+          </Text>
         </Center>
       ) : products.length === 0 ? (
         <Center py={10}>
-          <Text>No products found.</Text>
+          <Text fontSize="lg" color="gray.500">
+            No se encontraron productos.
+          </Text>
         </Center>
       ) : (
         <MotionBox
+          key={categoryId} // para re-animar al cambiar categoría
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <ItemList products={products} />
+          <ProductList products={products} />
         </MotionBox>
       )}
     </Container>

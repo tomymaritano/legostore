@@ -208,6 +208,7 @@ const Item = ({
           >
             Ver detalle
           </Button>
+          
 
           <MotionButton
             size="sm"

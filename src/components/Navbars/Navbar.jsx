@@ -119,19 +119,35 @@ const NavBar = () => {
 
       {/* Icons */}
       <Flex display={{ base: "none", md: "flex" }} alignItems="center" gap={4}>
-        <Link as={NavLink} to="/search" position="relative">
-          <Icon as={SearchIcon} boxSize={5} />
-        </Link>
+        {/* Search */}
+        <Box position="relative">
+          <IconButton
+            as={NavLink}
+            to="/search"
+            aria-label="Buscar"
+            icon={<SearchIcon />}
+            variant="ghost"
+            size="md"
+          />
+        </Box>
 
-        <Link as={NavLink} to="/wishlist" position="relative">
-          <FontAwesomeIcon icon="heart" size="lg" />
+        {/* Wishlist */}
+        <Box position="relative">
+          <IconButton
+            as={NavLink}
+            to="/wishlist"
+            aria-label="Favoritos"
+            icon={<FontAwesomeIcon icon="heart" />}
+            variant="ghost"
+            size="md"
+          />
           {totalWishlistQuantity > 0 && (
             <Badge
               colorScheme="red"
               borderRadius="full"
               position="absolute"
               top="-1"
-              right="-2"
+              right="-1"
               fontSize="0.7em"
               px={1.5}
               className={bumpWishlistClass}
@@ -139,7 +155,7 @@ const NavBar = () => {
               {totalWishlistQuantity}
             </Badge>
           )}
-        </Link>
+        </Box>
 
         {/* CartPopover → hover resumen → Ver carrito abre Drawer */}
         <CartPopover onOpenDrawer={onCartOpen} />
@@ -186,11 +202,28 @@ const NavBar = () => {
 
               <Divider my={2} />
 
-              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/search" onClick={onMenuClose}>
-                Search
+              {/* Search en mobile */}
+              <Button
+                variant="ghost"
+                fontWeight="bold"
+                as={NavLink}
+                to="/search"
+                onClick={onMenuClose}
+                leftIcon={<SearchIcon />}
+              >
+                Buscar
               </Button>
-              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/wishlist" onClick={onMenuClose}>
-                Wishlist ({totalWishlistQuantity})
+
+              {/* Wishlist en mobile */}
+              <Button
+                variant="ghost"
+                fontWeight="bold"
+                as={NavLink}
+                to="/wishlist"
+                onClick={onMenuClose}
+                leftIcon={<FontAwesomeIcon icon="heart" />}
+              >
+                Favoritos {totalWishlistQuantity > 0 && `(${totalWishlistQuantity})`}
               </Button>
 
               <Divider my={2} />
