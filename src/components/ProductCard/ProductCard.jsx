@@ -49,7 +49,7 @@ const ProductCard = ({
         position: "top-right",
       });
     } else {
-      addItem({ id, name, price }, 1);
+      addItem({ id, name, price, image }, 1);
 
       toast({
         title: "Producto agregado.",

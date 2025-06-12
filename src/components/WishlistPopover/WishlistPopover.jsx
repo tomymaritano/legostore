@@ -14,77 +14,54 @@ import {
   VStack,
   Text,
   Divider,
-  useDisclosure,
   HStack,
   Image,
 } from "@chakra-ui/react";
-import { FaShoppingBag } from "react-icons/fa";
-import { useContext, useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { useContext } from "react";
 import { CartContext } from "../CartContext/CartContext";
+import { Link as RouterLink } from "react-router-dom";
 
-const CartPopover = ({ onOpenDrawer }) => {
-  const { cart, totalQuantity, total } = useContext(CartContext);
-  const [bumpClass, setBumpClass] = useState("");
-
-  const {
-    isOpen: isPopoverOpen,
-    onOpen: onOpenPopover,
-    onClose: onClosePopover,
-  } = useDisclosure();
-
-  useEffect(() => {
-    if (totalQuantity === 0) return;
-    setBumpClass("cart-bump");
-
-    const timer = setTimeout(() => {
-      setBumpClass("");
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [totalQuantity]);
+const WishlistPopover = () => {
+  const { wishlist, totalWishlistQuantity } = useContext(CartContext);
 
   return (
-    <Popover
-      isOpen={isPopoverOpen}
-      onOpen={onOpenPopover}
-      onClose={onClosePopover}
-      trigger="hover"
-      placement="bottom-end"
-    >
+    <Popover trigger="hover" placement="bottom-end">
       <PopoverTrigger>
         <Box position="relative" cursor="pointer">
           <IconButton
-            icon={<FaShoppingBag />}
-            aria-label="Carrito"
+            aria-label="Favoritos"
+            icon={<FontAwesomeIcon icon={faHeart} />}
             variant="ghost"
             size="md"
           />
-          {totalQuantity > 0 && (
+          {totalWishlistQuantity > 0 && (
             <Badge
-              colorScheme="green"
+              colorScheme="red"
               borderRadius="full"
               position="absolute"
               top="-1"
               right="-1"
               fontSize="0.7em"
               px={1.5}
-              className={bumpClass}
             >
-              {totalQuantity}
+              {totalWishlistQuantity}
             </Badge>
           )}
         </Box>
       </PopoverTrigger>
+
       <PopoverContent w="320px" zIndex="popover">
         <PopoverArrow />
         <PopoverCloseButton />
-        <PopoverHeader fontWeight="bold">Resumen del carrito</PopoverHeader>
+        <PopoverHeader fontWeight="bold">Favoritos</PopoverHeader>
         <PopoverBody>
-          {totalQuantity === 0 ? (
-            <Text>No hay items en el carrito.</Text>
+          {totalWishlistQuantity === 0 ? (
+            <Text>No tienes productos en favoritos.</Text>
           ) : (
             <VStack align="stretch" spacing={3}>
-              {cart.slice(0, 3).map((item) => (
+              {wishlist.slice(0, 3).map((item) => (
                 <Box key={item.id}>
                   <HStack spacing={3}>
                     <Image
@@ -97,35 +74,32 @@ const CartPopover = ({ onOpenDrawer }) => {
                     />
                     <Box flex="1">
                       <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
-                        {item.name} x {item.quantity}
+                        {item.name}
                       </Text>
                       <Text fontSize="sm" color="gray.500">
-                        Subtotal: ${item.quantity * item.price}
+                        ${item.price}
                       </Text>
                     </Box>
                   </HStack>
                   <Divider mt={2} />
                 </Box>
               ))}
-              {cart.length > 3 && (
+              {wishlist.length > 3 && (
                 <Text fontSize="sm" color="gray.500">
-                  + {cart.length - 3} items más
+                  + {wishlist.length - 3} productos más
                 </Text>
               )}
             </VStack>
           )}
         </PopoverBody>
-        <PopoverFooter display="flex" justifyContent="space-between" alignItems="center">
-          <Text fontWeight="bold">Total: ${total}</Text>
+        <PopoverFooter display="flex" justifyContent="center" alignItems="center">
           <Button
             size="sm"
             colorScheme="teal"
-            onClick={() => {
-              onClosePopover();    // cerrás el Popover
-              onOpenDrawer();      // abrís el Drawer
-            }}
+            as={RouterLink}
+            to="/wishlist"
           >
-            Ver carrito
+            Ver todos los favoritos
           </Button>
         </PopoverFooter>
       </PopoverContent>
@@ -133,4 +107,4 @@ const CartPopover = ({ onOpenDrawer }) => {
   );
 };
 
-export default CartPopover;
+export default WishlistPopover;

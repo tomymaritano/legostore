@@ -4,7 +4,6 @@ import {
   Link,
   IconButton,
   Image,
-  Icon,
   Drawer,
   DrawerBody,
   DrawerOverlay,
@@ -19,21 +18,20 @@ import {
   MenuItem,
   Button,
   Divider,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { SearchIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
 import "./CartBump.css";
 import CartDrawer from "../Cart/CartDrawer";
 import CartPopover from "../CartPopover/CartPopover";
-
-library.add(faHeart);
+import WishlistPopover from "../WishlistPopover/WishlistPopover"; // ✅ IMPORT
 
 const NavBar = () => {
   const { totalQuantity, totalWishlistQuantity } = useContext(CartContext);
@@ -50,19 +48,13 @@ const NavBar = () => {
     onClose: onCartClose,
   } = useDisclosure();
 
-  const [bumpWishlistClass, setBumpWishlistClass] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Animación bump para Wishlist
-  useEffect(() => {
-    if (totalWishlistQuantity === 0) return;
-    setBumpWishlistClass("cart-bump");
-
-    const timer = setTimeout(() => {
-      setBumpWishlistClass("");
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [totalWishlistQuantity]);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log("Buscar:", searchQuery);
+    setSearchQuery("");
+  };
 
   return (
     <Flex
@@ -117,50 +109,30 @@ const NavBar = () => {
         </Menu>
       </Flex>
 
-      {/* Icons */}
+      {/* Icons + Search */}
       <Flex display={{ base: "none", md: "flex" }} alignItems="center" gap={4}>
-        {/* Search */}
-        <Box position="relative">
-          <IconButton
-            as={NavLink}
-            to="/search"
-            aria-label="Buscar"
-            icon={<SearchIcon />}
-            variant="ghost"
-            size="md"
-          />
-        </Box>
+        {/* Search inline */}
+        <form onSubmit={handleSearch}>
+          <InputGroup size="sm" w="200px">
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.500" />
+            </InputLeftElement>
+            <Input
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
+        </form>
 
-        {/* Wishlist */}
-        <Box position="relative">
-          <IconButton
-            as={NavLink}
-            to="/wishlist"
-            aria-label="Favoritos"
-            icon={<FontAwesomeIcon icon="heart" />}
-            variant="ghost"
-            size="md"
-          />
-          {totalWishlistQuantity > 0 && (
-            <Badge
-              colorScheme="red"
-              borderRadius="full"
-              position="absolute"
-              top="-1"
-              right="-1"
-              fontSize="0.7em"
-              px={1.5}
-              className={bumpWishlistClass}
-            >
-              {totalWishlistQuantity}
-            </Badge>
-          )}
-        </Box>
+        {/* WishlistPopover → hover resumen */}
+        <WishlistPopover /> {/* ✅ USO del WishlistPopover */}
 
-        {/* CartPopover → hover resumen → Ver carrito abre Drawer */}
+        {/* CartPopover → hover resumen */}
         <CartPopover onOpenDrawer={onCartOpen} />
 
-        {/* CartDrawer → Drawer controlado por isCartOpen / onCartClose */}
+        {/* CartDrawer */}
         <CartDrawer isOpen={isCartOpen} onClose={onCartClose} />
       </Flex>
 
@@ -202,18 +174,6 @@ const NavBar = () => {
 
               <Divider my={2} />
 
-              {/* Search en mobile */}
-              <Button
-                variant="ghost"
-                fontWeight="bold"
-                as={NavLink}
-                to="/search"
-                onClick={onMenuClose}
-                leftIcon={<SearchIcon />}
-              >
-                Buscar
-              </Button>
-
               {/* Wishlist en mobile */}
               <Button
                 variant="ghost"
@@ -221,7 +181,6 @@ const NavBar = () => {
                 as={NavLink}
                 to="/wishlist"
                 onClick={onMenuClose}
-                leftIcon={<FontAwesomeIcon icon="heart" />}
               >
                 Favoritos {totalWishlistQuantity > 0 && `(${totalWishlistQuantity})`}
               </Button>
