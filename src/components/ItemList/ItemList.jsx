@@ -3,8 +3,8 @@ import Item from "../Item/Item";
 
 const ItemList = ({ products }) => {
   return (
-    <Container maxW={"60%"}>
-      <SimpleGrid columns={4} spacing={15}>
+    <Container maxW={{ base: "100%", md: "80%", lg: "60%" }}>
+      <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={15}>
         {products.map((prod) => (
           <Item key={prod.id} {...prod} />
         ))}
