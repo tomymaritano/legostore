@@ -1,36 +1,87 @@
-import React, { useState } from "react";
-import { Container, Box, Button, Stack, Text } from "@chakra-ui/react";
-const ItemCount = ({ stock, initial, onAdd }) => {
-  const [quantity, setQuantity] = useState(initial);
+import { useState } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 
-  const increment = () => {
+const ItemCount = ({ initial = 1, stock, onAdd }) => {
+  const [quantity, setQuantity] = useState(initial);
+  const toast = useToast();
+
+  const handleIncrease = () => {
     if (quantity < stock) {
       setQuantity(quantity + 1);
+    } else {
+      toast({
+        title: "Stock máximo alcanzado.",
+        description: `Solo hay ${stock} unidades disponibles.`,
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
   };
 
-  const decrement = () => {
+  const handleDecrease = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
 
+  const handleAddToCart = () => {
+    onAdd(quantity);
+    toast({
+      title: "Producto agregado.",
+      description: `Agregaste ${quantity} unidades al carrito.`,
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right",
+    });
+  };
+
   return (
-    
-    <Container justifyContent='center' align="center">
-      <Box m="2">
-        <Stack justifyContent='center' align="center" direction="row" spacing={4}>
-          <Button size={"sm"} bgColor={"#f68024"} onClick={decrement}>-</Button>
-          <Text fontSize="md" as={"b"}>{quantity}</Text>
-          <Button size={"sm"} bgColor={"#f68024"} onClick={increment}>+</Button>
-        </Stack>
-      </Box>
-      <Box>
-        <Button size={"sm"} bgColor={"#f68024"} onClick={() => onAdd(quantity)} disabled={!stock}>
-          Agregar al Carrito
-        </Button>
-      </Box>
-    </Container>
+    <Box w="100%" mt={4}>
+      {/* Contador */}
+      <Flex justify="center" align="center" mb={4}>
+        <IconButton
+          icon={<MinusIcon />}
+          onClick={handleDecrease}
+          isDisabled={quantity === 1}
+          aria-label="Disminuir"
+          size="sm"
+          mr={2}
+        />
+        <Text fontSize="xl" mx={2} minW="40px" textAlign="center">
+          {quantity}
+        </Text>
+        <IconButton
+          icon={<AddIcon />}
+          onClick={handleIncrease}
+          isDisabled={quantity === stock}
+          aria-label="Aumentar"
+          size="sm"
+          ml={2}
+        />
+      </Flex>
+
+      {/* Botón Agregar al carrito */}
+      <Button
+        colorScheme="teal"
+        size="lg"
+        w="100%"
+        onClick={handleAddToCart}
+        isDisabled={stock === 0}
+      >
+        Agregar al carrito
+      </Button>
+    </Box>
   );
 };
 

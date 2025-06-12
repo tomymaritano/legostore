@@ -18,6 +18,7 @@ import {
   MenuList,
   MenuItem,
   Button,
+  Divider,
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
@@ -28,29 +29,28 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { SearchIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
-import "./CartBump.css"; // importa el css correctamente
+import "./CartBump.css";
 import CartDrawer from "../Cart/CartDrawer";
+import CartPopover from "../CartPopover/CartPopover";
 
 library.add(faHeart);
 
 const NavBar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   const { totalQuantity, totalWishlistQuantity } = useContext(CartContext);
-  const [bumpClass, setBumpClass] = useState("");
+
+  const {
+    isOpen: isMenuOpen,
+    onOpen: onMenuOpen,
+    onClose: onMenuClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCartOpen,
+    onOpen: onCartOpen,
+    onClose: onCartClose,
+  } = useDisclosure();
+
   const [bumpWishlistClass, setBumpWishlistClass] = useState("");
-
-  // Animación bump para Cart
-  useEffect(() => {
-    if (totalQuantity === 0) return;
-    setBumpClass("cart-bump");
-
-    const timer = setTimeout(() => {
-      setBumpClass("");
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [totalQuantity]);
 
   // Animación bump para Wishlist
   useEffect(() => {
@@ -92,41 +92,25 @@ const NavBar = () => {
         flex={1}
         justifyContent="center"
       >
-        <Link
-          textTransform="uppercase"
-          fontWeight="bold"
-          as={NavLink}
-          to="/category/helmet"
-        >
+        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/helmet">
           Helmet
         </Link>
-        <Link
-          textTransform="uppercase"
-          fontWeight="bold"
-          as={NavLink}
-          to="/category/brickheadz"
-        >
+        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/brickheadz">
           Brickheadz
         </Link>
         {/* Dropdown Menu */}
         <Menu>
-          <MenuButton
-            as={Button}
-            rightIcon={<ChevronDownIcon />}
-            variant="ghost"
-            fontWeight="bold"
-            textTransform="uppercase"
-          >
+          <MenuButton as={Button} rightIcon={<ChevronDownIcon />} variant="ghost" fontWeight="bold" textTransform="uppercase">
             Cars
           </MenuButton>
           <MenuList>
-            <MenuItem as={NavLink} to="/category/cars/sport" onClick={onClose}>
+            <MenuItem as={NavLink} to="/category/cars/sport" onClick={onMenuClose}>
               Sport Cars
             </MenuItem>
-            <MenuItem as={NavLink} to="/category/cars/classic" onClick={onClose}>
+            <MenuItem as={NavLink} to="/category/cars/classic" onClick={onMenuClose}>
               Classic Cars
             </MenuItem>
-            <MenuItem as={NavLink} to="/category/cars/suv" onClick={onClose}>
+            <MenuItem as={NavLink} to="/category/cars/suv" onClick={onMenuClose}>
               SUV
             </MenuItem>
           </MenuList>
@@ -134,11 +118,7 @@ const NavBar = () => {
       </Flex>
 
       {/* Icons */}
-      <Flex
-        display={{ base: "none", md: "flex" }}
-        alignItems="center"
-        gap={4}
-      >
+      <Flex display={{ base: "none", md: "flex" }} alignItems="center" gap={4}>
         <Link as={NavLink} to="/search" position="relative">
           <Icon as={SearchIcon} boxSize={5} />
         </Link>
@@ -161,78 +141,73 @@ const NavBar = () => {
           )}
         </Link>
 
-<CartDrawer />
+        {/* CartPopover → hover resumen → Ver carrito abre Drawer */}
+        <CartPopover onOpenDrawer={onCartOpen} />
+
+        {/* CartDrawer → Drawer controlado por isCartOpen / onCartClose */}
+        <CartDrawer isOpen={isCartOpen} onClose={onCartClose} />
       </Flex>
 
       {/* Mobile Menu Icon */}
       <Box display={{ base: "block", md: "none" }}>
-        <IconButton
-          icon={<FaBars />}
-          aria-label="Open Menu"
-          variant="ghost"
-          size="md"
-          onClick={onOpen}
-        />
+        <IconButton icon={<FaBars />} aria-label="Open Menu" variant="ghost" size="md" onClick={onMenuOpen} />
       </Box>
 
       {/* Mobile Drawer */}
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+      <Drawer placement="left" onClose={onMenuClose} isOpen={isMenuOpen}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerBody mt={10}>
             <VStack spacing={4} align="start">
-              <Link
-                as={NavLink}
-                to="/category/helmet"
-                fontWeight="bold"
-                onClick={onClose}
-              >
+              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/category/helmet" onClick={onMenuClose}>
                 Helmet
-              </Link>
-              <Link
-                as={NavLink}
-                to="/category/brickheadz"
-                fontWeight="bold"
-                onClick={onClose}
-              >
+              </Button>
+              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/category/brickheadz" onClick={onMenuClose}>
                 Brickheadz
-              </Link>
+              </Button>
               {/* Subitems in Drawer */}
-              <Box>
+              <Box w="100%">
                 <Box fontWeight="bold" mb={1}>
                   Cars
                 </Box>
                 <VStack align="start" pl={4}>
-                  <Link
-                    as={NavLink}
-                    to="/category/cars/sport"
-                    onClick={onClose}
-                  >
+                  <Button variant="ghost" as={NavLink} to="/category/cars/sport" onClick={onMenuClose}>
                     Sport Cars
-                  </Link>
-                  <Link
-                    as={NavLink}
-                    to="/category/cars/classic"
-                    onClick={onClose}
-                  >
+                  </Button>
+                  <Button variant="ghost" as={NavLink} to="/category/cars/classic" onClick={onMenuClose}>
                     Classic Cars
-                  </Link>
-                  <Link as={NavLink} to="/category/cars/suv" onClick={onClose}>
+                  </Button>
+                  <Button variant="ghost" as={NavLink} to="/category/cars/suv" onClick={onMenuClose}>
                     SUV
-                  </Link>
+                  </Button>
                 </VStack>
               </Box>
 
-              <Link as={NavLink} to="/search" onClick={onClose}>
+              <Divider my={2} />
+
+              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/search" onClick={onMenuClose}>
                 Search
-              </Link>
-              <Link as={NavLink} to="/wishlist" onClick={onClose}>
+              </Button>
+              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/wishlist" onClick={onMenuClose}>
                 Wishlist ({totalWishlistQuantity})
-              </Link>
-              <Link as={NavLink} to="/cart" onClick={onClose}>
-                Cart ({totalQuantity})
-              </Link>
+              </Button>
+
+              <Divider my={2} />
+
+              {/* Mobile Drawer → Botón que abre el mismo CartDrawer */}
+              <Button
+                variant="solid"
+                colorScheme="teal"
+                fontWeight="bold"
+                w="100%"
+                onClick={() => {
+                  onMenuClose(); // cerrar Mobile Drawer
+                  onCartOpen(); // abrir CartDrawer
+                }}
+              >
+                Ver Carrito ({totalQuantity})
+              </Button>
             </VStack>
           </DrawerBody>
         </DrawerContent>

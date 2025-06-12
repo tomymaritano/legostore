@@ -6,29 +6,32 @@ import {
   Stack,
   Text,
   Button,
-  Box,
   Badge,
   CardFooter,
   Flex,
   useToast,
+  HStack,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { motion } from "framer-motion";
+import { StarIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { CartContext } from "../CartContext/CartContext";
+import { motion } from "framer-motion";
 
-const MotionBox = motion(Box);
+// MotionButton
+const MotionButton = motion(Button);
 
 const Item = ({
   id,
   name,
   img,
   price,
+  originalPrice,
   stock,
-  description,
-  category,
   isNew,
   isOnSale,
+  rating,
+  shortDescription,
 }) => {
   const { addItem, cart } = useContext(CartContext);
   const toast = useToast();
@@ -58,7 +61,6 @@ const Item = ({
       stock,
     };
 
-    // Si no hay stock → error (esto es redundante, porque el botón ya se desactiva, pero es PRO UX)
     if (stock === 0) {
       toast({
         title: "Sin stock.",
@@ -71,7 +73,6 @@ const Item = ({
       return;
     }
 
-    // Ver si ya está en el carrito
     const isInCart = cart.some((prod) => prod.id === id);
 
     if (isInCart) {
@@ -84,7 +85,6 @@ const Item = ({
         position: "top-right",
       });
     } else {
-      // Agregar producto
       addItem(productToAdd, 1);
 
       toast({
@@ -109,6 +109,12 @@ const Item = ({
       position="relative"
       overflow="hidden"
       role="group"
+      borderRadius="md"
+      transition="all 0.3s ease"
+      _hover={{
+        transform: "translateY(-4px)", // levita un poco
+        boxShadow: "xl", // sombra más fuerte
+      }}
     >
       <CardBody p={0} w="100%" position="relative">
         <Image
@@ -118,11 +124,13 @@ const Item = ({
           h="300px"
           objectFit="contain"
           backgroundColor="white"
-          transition="all 0.3s ease"
-          _groupHover={{ transform: "scale(1.05)" }}
+          transition="transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease"
+          _groupHover={{
+            transform: "scale(1.07)",
+            opacity: 0.95,
+          }}
         />
 
-        {/* Badge dinámico */}
         {badgeText && (
           <Badge
             position="absolute"
@@ -145,9 +153,44 @@ const Item = ({
         <Heading size="sm" noOfLines={1}>
           {name}
         </Heading>
-        <Text color="blue.600" fontSize="lg" fontWeight="bold">
-          {price} kr.
+
+        {/* Short description */}
+        <Text color="gray.600" fontSize="sm" noOfLines={2}>
+          {shortDescription}
         </Text>
+
+        {/* Rating */}
+        <HStack justify="center" spacing="1">
+          {Array(5)
+            .fill("")
+            .map((_, i) => (
+              <StarIcon
+                key={i}
+                boxSize={4}
+                color={i < Math.floor(rating) ? "teal.400" : "gray.300"}
+              />
+            ))}
+          <Text fontSize="xs" color="gray.500">
+            ({rating})
+          </Text>
+        </HStack>
+
+        {/* Precio */}
+        <Flex align="center" justify="center" gap={2}>
+          {isOnSale && originalPrice && (
+            <Text
+              color="gray.500"
+              fontSize="sm"
+              as="s"
+            >
+              ${originalPrice}
+            </Text>
+          )}
+          <Text color="blue.600" fontSize="xl" fontWeight="bold">
+            ${price}
+          </Text>
+        </Flex>
+
         <Text color="gray.600" fontSize="sm">
           Stock: {stock}
         </Text>
@@ -166,15 +209,16 @@ const Item = ({
             Ver detalle
           </Button>
 
-          <Button
+          <MotionButton
             size="sm"
             colorScheme="orange"
             flex="1"
             onClick={handleAddToCart}
             isDisabled={stock === 0}
+            whileTap={{ scale: 0.95 }} // animación PRO
           >
             Agregar al carrito
-          </Button>
+          </MotionButton>
         </Flex>
       </CardFooter>
     </Card>
