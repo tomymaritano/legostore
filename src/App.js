@@ -7,6 +7,7 @@ import { CartProvider } from "./components/CartContext/CartContext";
 import NotFound from "./components/NotFound/NotFound";
 import Layout from "./components/Layout/Layout";
 import Wishlist from "./components/Wishlist/Wishlist";
+import SearchResults from "./components/SearchResults/SearchResults";
 
 // Wrapper para poder usar useLocation
 function AppWrapper() {
@@ -31,6 +32,7 @@ function AppContent() {
           <Route path="/item/:itemId" element={<ItemDetailContainer />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/search" element={<SearchResults />} /> {/* ✅ */}
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

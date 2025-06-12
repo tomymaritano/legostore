@@ -21,9 +21,16 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverBody,
+  Text,
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
 import { SearchIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useContext, useEffect, useState } from "react";
@@ -31,7 +38,9 @@ import { CartContext } from "../CartContext/CartContext";
 import "./CartBump.css";
 import CartDrawer from "../Cart/CartDrawer";
 import CartPopover from "../CartPopover/CartPopover";
-import WishlistPopover from "../WishlistPopover/WishlistPopover"; // ✅ IMPORT
+import WishlistPopover from "../WishlistPopover/WishlistPopover";
+import { getProducts } from "../Service/asyncMock";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
   const { totalQuantity, totalWishlistQuantity } = useContext(CartContext);
@@ -48,12 +57,44 @@ const NavBar = () => {
     onClose: onCartClose,
   } = useDisclosure();
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    isOpen: isSearchOpen,
+    onOpen: onSearchOpen,
+    onClose: onSearchClose,
+  } = useDisclosure();
 
-  const handleSearch = (e) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await getProducts();
+      setProducts(data);
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter((prod) =>
+    prod.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+  );
+
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log("Buscar:", searchQuery);
-    setSearchQuery("");
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      onSearchClose();
+    }
+  };
+
+  // Manejo para evitar que el Popover se cierre al hacer click en un producto
+  const handleResultClick = () => {
+    setTimeout(() => {
+      setSearchQuery("");
+      onSearchClose();
+    }, 100);
   };
 
   return (
@@ -90,7 +131,6 @@ const NavBar = () => {
         <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/brickheadz">
           Brickheadz
         </Link>
-        {/* Dropdown Menu */}
         <Menu>
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />} variant="ghost" fontWeight="bold" textTransform="uppercase">
             Cars
@@ -111,25 +151,85 @@ const NavBar = () => {
 
       {/* Icons + Search */}
       <Flex display={{ base: "none", md: "flex" }} alignItems="center" gap={4}>
-        {/* Search inline */}
-        <form onSubmit={handleSearch}>
-          <InputGroup size="sm" w="200px">
-            <InputLeftElement pointerEvents="none">
-              <SearchIcon color="gray.500" />
-            </InputLeftElement>
-            <Input
-              type="text"
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </InputGroup>
-        </form>
+        {/* Search con Popover controlado */}
+        <Popover
+          isOpen={isSearchOpen && searchQuery.length >= 2}
+          placement="bottom-start"
+        >
+          <PopoverTrigger>
+            <Box>
+              <form onSubmit={handleSearchSubmit}>
+                <InputGroup size="sm" w="200px">
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon color="gray.500" />
+                  </InputLeftElement>
+                  <Input
+                    type="text"
+                    placeholder="Buscar (min 2 letras)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={onSearchOpen}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        if (searchQuery.trim() === "") {
+                          onSearchClose();
+                        }
+                      }, 200);
+                    }}
+                  />
+                </InputGroup>
+              </form>
+            </Box>
+          </PopoverTrigger>
+          <PopoverContent w="250px" maxH="300px" overflowY="auto" zIndex="popover">
+            <PopoverArrow />
+            <PopoverCloseButton onClick={() => setSearchQuery("")} />
+            <PopoverBody>
+              {filteredProducts.length === 0 ? (
+                <Text textAlign="center" py={2} color="gray.500">
+                  No se encontraron productos.
+                </Text>
+              ) : (
+                filteredProducts.slice(0, 5).map((prod) => (
+                  <Box
+                    key={prod.id}
+                    as={NavLink}
+                    to={`/item/${prod.id}`}
+                    display="flex"
+                    alignItems="center"
+                    gap={3}
+                    py={2}
+                    px={2}
+                    borderRadius="md"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={handleResultClick}
+                  >
+                    <Image
+                      src={prod.img}
+                      boxSize="40px"
+                      objectFit="contain"
+                      borderRadius="md"
+                      bg="white"
+                    />
+                    <Box>
+                      <Text fontWeight="medium" noOfLines={1}>
+                        {prod.name}
+                      </Text>
+                      <Text fontSize="sm" color="gray.500">
+                        ${prod.price}
+                      </Text>
+                    </Box>
+                  </Box>
+                ))
+              )}
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
 
-        {/* WishlistPopover → hover resumen */}
-        <WishlistPopover /> {/* ✅ USO del WishlistPopover */}
+        {/* WishlistPopover */}
+        <WishlistPopover />
 
-        {/* CartPopover → hover resumen */}
+        {/* CartPopover */}
         <CartPopover onOpenDrawer={onCartOpen} />
 
         {/* CartDrawer */}
@@ -154,7 +254,6 @@ const NavBar = () => {
               <Button variant="ghost" fontWeight="bold" as={NavLink} to="/category/brickheadz" onClick={onMenuClose}>
                 Brickheadz
               </Button>
-              {/* Subitems in Drawer */}
               <Box w="100%">
                 <Box fontWeight="bold" mb={1}>
                   Cars
@@ -187,15 +286,15 @@ const NavBar = () => {
 
               <Divider my={2} />
 
-              {/* Mobile Drawer → Botón que abre el mismo CartDrawer */}
+              {/* Mobile Drawer → CartDrawer */}
               <Button
                 variant="solid"
                 colorScheme="teal"
                 fontWeight="bold"
                 w="100%"
                 onClick={() => {
-                  onMenuClose(); // cerrar Mobile Drawer
-                  onCartOpen(); // abrir CartDrawer
+                  onMenuClose();
+                  onCartOpen();
                 }}
               >
                 Ver Carrito ({totalQuantity})
