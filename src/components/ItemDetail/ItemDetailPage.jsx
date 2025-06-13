@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductById } from "../Service/asyncMock";
+import { getProductById } from "../../services/productService";
 import ItemDetail from "./ItemDetail";
 import { motion, AnimatePresence } from "framer-motion";
 import { CloseIcon } from "@chakra-ui/icons";

@@ -18,7 +18,7 @@ import {
   Skeleton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { getProducts } from "../Service/asyncMock";
+import useProducts from "../../hooks/useProducts";
 import ProductList from "../ProductList/ProductList";
 import ProductFilters from "../ProductFilters/ProductFilters";
 import { motion } from "framer-motion";
@@ -28,8 +28,6 @@ import { useParams } from "react-router-dom";
 const MotionBox = motion(Box);
 
 const ItemListContainer = ({ greeting }) => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
@@ -62,63 +60,19 @@ const ItemListContainer = ({ greeting }) => {
     setCurrentPage(1); // Reset page cuando cambian filtros
   }, [filters, setSearchParams]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      const data = await getProducts();
-      setProducts(data);
-      setLoading(false);
-    };
-
-    fetchProducts();
-  }, []);
-
-  const filteredProducts = products.filter((prod) => {
-    // CORREGIDO: categoryId case-insensitive
-    if (
-      categoryId &&
-      prod.category.toLowerCase() !== categoryId.toLowerCase()
-    )
-      return false;
-
-    if (filters.type.length > 0 && !filters.type.includes(prod.type)) return false;
-    if (filters.age.length > 0 && !filters.age.includes(prod.age)) return false;
-    if (filters.theme.length > 0 && !filters.theme.includes(prod.theme)) return false;
-
-    // CORREGIDO: interests (prod.interests es array)
-    if (
-      filters.interests.length > 0 &&
-      !filters.interests.some((interest) =>
-        prod.interests.includes(interest)
-      )
-    )
-      return false;
-
-    if (filters.pieces.length > 0 && !filters.pieces.includes(prod.pieces)) return false;
-    if (filters.highlight.length > 0 && !filters.highlight.includes(prod.highlight)) return false;
-
-    return true;
+  const {
+    products,
+    filteredProducts,
+    paginatedProducts,
+    totalPages,
+    loading,
+  } = useProducts({
+    categoryId,
+    filters,
+    sortOption,
+    currentPage,
+    productsPerPage,
   });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortOption) {
-      case "price_low_high":
-        return a.price - b.price;
-      case "price_high_low":
-        return b.price - a.price;
-      case "name_asc":
-        return a.name.localeCompare(b.name);
-      case "name_desc":
-        return b.name.localeCompare(a.name);
-      default:
-        return 0;
-    }
-  });
-
-  const paginatedProducts = sortedProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
 
   // Scroll to top cuando cambio filtros o sort o page
   useEffect(() => {
@@ -259,8 +213,7 @@ const ItemListContainer = ({ greeting }) => {
                     Anterior
                   </Button>
                   <Text fontSize="sm" fontWeight="medium">
-                    Página {currentPage} /{" "}
-                    {Math.ceil(sortedProducts.length / productsPerPage)}
+                    Página {currentPage} / {totalPages}
                   </Text>
                   <Button
                     size="sm"
@@ -268,13 +221,13 @@ const ItemListContainer = ({ greeting }) => {
                       setCurrentPage((p) =>
                         Math.min(
                           p + 1,
-                          Math.ceil(sortedProducts.length / productsPerPage)
+                          totalPages
                         )
                       )
                     }
                     isDisabled={
                       currentPage ===
-                      Math.ceil(sortedProducts.length / productsPerPage)
+                      totalPages
                     }
                     aria-label="Página siguiente"
                   >

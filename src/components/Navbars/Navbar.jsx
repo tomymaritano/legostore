@@ -33,14 +33,16 @@ import { FaBars, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { SearchIcon } from "@chakra-ui/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import { useEffect, useState } from "react";
+import useCart from "../../hooks/useCart";
+import useWishlist from "../../hooks/useWishlist";
 import CartDrawer from "../Cart/CartDrawer";
-import { getProducts } from "../Service/asyncMock";
+import { getProducts } from "../../services/productService";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
-  const { totalQuantity, totalWishlistQuantity, wishlist } = useContext(CartContext);
+  const { totalQuantity } = useCart();
+  const { totalWishlistQuantity, wishlist } = useWishlist();
 
   const {
     isOpen: isMenuOpen,

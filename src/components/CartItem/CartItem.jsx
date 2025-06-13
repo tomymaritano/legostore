@@ -5,12 +5,11 @@ import {
   Flex,
   IconButton,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useCart from "../../hooks/useCart";
 import { AddIcon, MinusIcon, CloseIcon } from "@chakra-ui/icons";
 
 const CartItem = ({ id, name, price, quantity, image, img, images }) => {
-  const { increaseQuantity, decreaseQuantity, removeItem } = useContext(CartContext);
+  const { increaseQuantity, decreaseQuantity, removeItem } = useCart();
 
   const subtotal = price * quantity;
 

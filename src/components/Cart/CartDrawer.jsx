@@ -16,8 +16,7 @@ import {
   Progress,
   useToast,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useCart from "../../hooks/useCart";
 import { FaTrashAlt, FaPlus, FaMinus, FaTruck } from "react-icons/fa";
 
 const CartDrawer = ({ isOpen, onClose }) => {
@@ -29,7 +28,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     decreaseQuantity,
     removeItem,
     clearCart,
-  } = useContext(CartContext);
+  } = useCart();
 
   const toast = useToast();
 

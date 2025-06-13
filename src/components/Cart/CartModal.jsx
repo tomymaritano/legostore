@@ -12,14 +12,13 @@ import {
   Box,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useCart from "../../hooks/useCart";
 import CartItem from "../CartItem/CartItem";
 import { Link } from "react-router-dom";
 
 const CartModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { cart, clearCart, totalQuantity, total } = useContext(CartContext);
+  const { cart, clearCart, totalQuantity, totalPrice } = useCart();
 
   return (
     <>
@@ -45,7 +44,7 @@ const CartModal = () => {
 
                 <Box textAlign="right" mt={4} w="100%">
                   <Text fontSize="xl" fontWeight="bold">
-                    Total: ${total}
+                    Total: ${totalPrice}
                   </Text>
                 </Box>
               </VStack>

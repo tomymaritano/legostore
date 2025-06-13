@@ -19,12 +19,11 @@ import {
 } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useWishlist from "../../hooks/useWishlist";
 import { Link as RouterLink } from "react-router-dom";
 
 const WishlistPopover = () => {
-  const { wishlist, totalWishlistQuantity } = useContext(CartContext);
+  const { wishlist, totalWishlistQuantity } = useWishlist();
 
   return (
     <Popover trigger="hover" placement="bottom-end">

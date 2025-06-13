@@ -12,8 +12,9 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { FaHeart, FaRegHeart, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import { useContext, useState } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import { useState } from "react";
+import useCart from "../../hooks/useCart";
+import useWishlist from "../../hooks/useWishlist";
 
 const ItemDetail = ({ product }) => {
   const {
@@ -29,7 +30,8 @@ const ItemDetail = ({ product }) => {
     rating,
   } = product;
 
-  const { cart, addItem, wishlist, addToWishlist, removeFromWishlist } = useContext(CartContext);
+  const { cart, addItem } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const toast = useToast();
 
   const isInWishlist = wishlist.some((prod) => prod.id === id);

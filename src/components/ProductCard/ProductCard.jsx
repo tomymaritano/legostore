@@ -10,8 +10,9 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useContext, useState } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import { useState } from "react";
+import useCart from "../../hooks/useCart";
+import useWishlist from "../../hooks/useWishlist";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import ProductCardBadge from "../ProductCardBadge/ProductCardBadge";
@@ -34,7 +35,8 @@ const ProductCard = ({
   isNew,
   isOnSale,
 }) => {
-  const { cart, addItem, wishlist, addToWishlist, removeFromWishlist } = useContext(CartContext);
+  const { cart, addItem } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const toast = useToast();
   const location = useLocation();
 

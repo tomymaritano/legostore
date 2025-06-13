@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useCart from "../../hooks/useCart";
 import CartItem from "../CartItem/CartItem";
 import { Link } from "react-router-dom";
 import {
@@ -13,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 const Cart = () => {
-  const { cart, clearCart, totalQuantity, total } = useContext(CartContext);
+  const { cart, clearCart, totalQuantity, totalPrice } = useCart();
 
   if (totalQuantity === 0) {
     return (
@@ -42,7 +41,7 @@ const Cart = () => {
 
       <Box textAlign="right" mt={6}>
         <Text fontSize="xl" fontWeight="bold">
-          Total: ${total}
+          Total: ${totalPrice}
         </Text>
       </Box>
 

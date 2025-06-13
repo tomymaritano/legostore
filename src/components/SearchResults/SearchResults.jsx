@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getProducts } from "../Service/asyncMock";
+import { getProducts } from "../../services/productService";
 import ProductList from "../ProductList/ProductList"; // tu componente ya listo
 import { motion } from "framer-motion";
 

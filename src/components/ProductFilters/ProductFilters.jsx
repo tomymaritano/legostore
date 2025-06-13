@@ -19,7 +19,7 @@ import {
   getProductsByFilters,
   getTotalProductsByFilterKey,
   getProductsByFiltersExceptKey, // <- IMPORTAR ESTO
-} from "../Service/asyncMock";
+} from "../../services/productService";
 
 const FILTER_CONFIG = [
   { label: "Tipo de Producto", key: "type", options: ["Sets", "Decoración del hogar"] },

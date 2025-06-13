@@ -9,13 +9,12 @@ import {
   HStack,
   IconButton,
 } from "@chakra-ui/react";
-import { useContext } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import useWishlist from "../../hooks/useWishlist";
 import { Link as RouterLink } from "react-router-dom";
 import { FaHeartBroken } from "react-icons/fa";
 
 const Wishlist = () => {
-  const { wishlist, removeFromWishlist } = useContext(CartContext);
+  const { wishlist, removeFromWishlist } = useWishlist();
 
   return (
     <Container maxW="container.md" py={10}>

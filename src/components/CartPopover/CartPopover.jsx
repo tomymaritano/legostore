@@ -19,11 +19,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FaShoppingBag } from "react-icons/fa";
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../CartContext/CartContext";
+import { useEffect, useState } from "react";
+import useCart from "../../hooks/useCart";
 
 const CartPopover = ({ onOpenDrawer }) => {
-  const { cart, totalQuantity, total } = useContext(CartContext);
+  const { cart, totalQuantity, totalPrice } = useCart();
   const [bumpClass, setBumpClass] = useState("");
 
   const {
@@ -129,7 +129,7 @@ const CartPopover = ({ onOpenDrawer }) => {
         </PopoverBody>
 
         <PopoverFooter display="flex" justifyContent="space-between" alignItems="center">
-          <Text fontWeight="bold">Total: ${formatPrice(total)}</Text>
+          <Text fontWeight="bold">Total: ${formatPrice(totalPrice)}</Text>
           <Button
             size="sm"
             colorScheme="teal"
