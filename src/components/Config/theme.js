@@ -39,8 +39,8 @@ export default {
     },
   },
   fonts: {
-    heading: `'Rubik', sans-serif`, // LEGO-like
-    body: `'Open Sans', sans-serif`,
+    heading: "'Barlow', sans-serif",
+    body: "'Barlow', sans-serif",
   },
   space: {
     px: '1px',
