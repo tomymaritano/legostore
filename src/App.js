@@ -1,14 +1,14 @@
 import * as React from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import ItemListContainer from "./components/ItemListContainer/ItemListContainer";
-import ItemDetailContainer from "./components/ItemDetailContainer/ItemDetailContainer";
-import Cart from "./components/Cart/Cart";
-import { CartProvider } from "./components/CartContext/CartContext";
+import ItemListContainer from "./features/products/components/ItemListContainer/ItemListContainer";
+import ItemDetailContainer from "./features/products/components/ItemDetailContainer/ItemDetailContainer";
+import Cart from "./features/cart/components/Cart/Cart";
+import { CartProvider } from "./features/cart/components/CartContext/CartContext";
 import NotFound from "./components/NotFound/NotFound";
 import Layout from "./components/Layout/Layout";
-import Wishlist from "./components/Wishlist/Wishlist";
-import SearchResults from "./components/SearchResults/SearchResults";
-import ItemDetailPage from "./components/ItemDetail/ItemDetailPage";
+import Wishlist from "./features/wishlist/components/Wishlist/Wishlist";
+import SearchResults from "./features/products/components/SearchResults/SearchResults";
+import ItemDetailPage from "./features/products/components/ItemDetail/ItemDetailPage";
 
 function AppWrapper() {
   return (

@@ -33,11 +33,11 @@ import { FaBars, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { SearchIcon } from "@chakra-ui/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useCart from "../../features/cart/hooks/useCart";
 import useWishlist from "../../features/wishlist/hooks/useWishlist";
 import CartDrawer from "../../features/cart/components/Cart/CartDrawer";
-import { getProducts } from "../../features/products/services/productService";
+import useSearchProducts from "../../features/products/hooks/useSearchProducts";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
@@ -64,19 +64,10 @@ const NavBar = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const { promise, cancel } = getProducts({ retries: 2 });
-    promise
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
-    return cancel;
-  }, []);
-
-  const filteredProducts = products.filter((prod) =>
-    prod.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+  const { data: filteredProducts = [] } = useSearchProducts(
+    debouncedSearchQuery,
+    { enabled: debouncedSearchQuery.length >= 2 }
   );
 
   const handleSearchSubmit = (e) => {
