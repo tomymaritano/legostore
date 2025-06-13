@@ -103,7 +103,7 @@ const NavBar = () => {
       boxShadow="lg"
       fontFamily="'Barlow', sans-serif"
     >
-      <Container maxW="1200px" py={3} px={6}>
+      <Container maxW="1920px" py={3} px={6}>
         <Flex justifyContent="space-between" alignItems="center">
           {/* Logo */}
           <Link as={NavLink} to="/" px={2}>
