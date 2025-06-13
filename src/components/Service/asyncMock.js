@@ -172,6 +172,32 @@ const products = [
   },
 ];
 
+export const FILTER_CONFIG = [
+  { label: "Tipo de Producto", key: "type", options: ["Sets", "Decoración del hogar"] },
+  { label: "Edad", key: "age", options: ["12+", "16+", "18+"] },
+  {
+    label: "Tema",
+    key: "theme",
+    options: [
+      "Architecture",
+      "Star Wars",
+      "Technic",
+      "Friends",
+      "Harry Potter",
+      "Marvel",
+      "Super Mario",
+      "Disney",
+    ],
+  },
+  {
+    label: "Intereses",
+    key: "interests",
+    options: ["Edificios", "Vehículos", "Arte", "Robots", "Deportes"],
+  },
+  { label: "Número de Piezas", key: "pieces", options: ["0-500", "501-1000", "1001-2000", "2001+"] },
+  { label: "Destacados", key: "highlight", options: ["Exclusivos", "Destacados", "Edición Limitada"] },
+];
+
 export const getProducts = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
