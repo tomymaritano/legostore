@@ -17,6 +17,7 @@ This app is a small e‑commerce demo built with React. It showcases a catalog o
 
 - **Chakra UI** – provides accessible, themeable React components used throughout the interface.
 - **React Router** – handles client side routing between pages of the store.
+- **React Query** – caches product data locally and provides pagination support.
 
 Other dependencies include FontAwesome icons and Framer Motion for small animations. See `package.json` for the full list.
 
@@ -31,6 +32,10 @@ src/
 ```
 
 Components consume hooks and should avoid data fetching or direct business logic. Hooks use services to interact with APIs or mocks.
+
+## Pagination and caching
+
+`useProducts` relies on **React Query** to fetch and cache products. The current filters and page are stored in the URL so the state can be shared. Switching pages keeps the previous list while new data loads in the background.
 
 ## Service pattern
 

@@ -1,86 +1,69 @@
-import { useEffect, useMemo, useState } from 'react';
-import { getProducts } from '../services/productService';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getProductsPaginated } from '../services/productService';
 
-export default function useProducts({
-  categoryId,
-  filters,
-  sortOption,
-  currentPage,
-  productsPerPage,
-}) {
-  const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function useProducts({ categoryId, sortOption, productsPerPage = 9 }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const parseFilters = () => ({
+    type: searchParams.getAll('type'),
+    age: searchParams.getAll('age'),
+    theme: searchParams.getAll('theme'),
+    interests: searchParams.getAll('interests'),
+    pieces: searchParams.getAll('pieces'),
+    highlight: searchParams.getAll('highlight'),
+  });
+
+  const [filters, setFilters] = useState(parseFilters());
+  const [page, setPage] = useState(Number(searchParams.get('page') || 1));
 
   useEffect(() => {
-    const { promise, cancel } = getProducts({ retries: 2 });
-    setLoading(true);
-    promise
-      .then((data) => {
-        setAllProducts(data);
-        setError(null);
-      })
-      .catch((err) => {
-        if (err.name !== 'AbortError') {
-          console.error(err);
-        }
-      })
-      .finally(() => setLoading(false));
-    return cancel;
-  }, []);
+    setFilters(parseFilters());
+    setPage(Number(searchParams.get('page') || 1));
+  }, [searchParams]);
 
-  const filteredProducts = useMemo(() => {
-    return allProducts.filter((prod) => {
-      if (categoryId && prod.category.toLowerCase() !== categoryId.toLowerCase()) {
-        return false;
-      }
-      if (filters.type?.length && !filters.type.includes(prod.type)) return false;
-      if (filters.age?.length && !filters.age.includes(prod.age)) return false;
-      if (filters.theme?.length && !filters.theme.includes(prod.theme)) return false;
-      if (
-        filters.interests?.length &&
-        !filters.interests.some((interest) => prod.interests.includes(interest))
-      )
-        return false;
-      if (filters.pieces?.length && !filters.pieces.includes(prod.pieces)) return false;
-      if (filters.highlight?.length && !filters.highlight.includes(prod.highlight)) return false;
-      return true;
+  useEffect(() => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, values]) => {
+      values.forEach((val) => params.append(key, val));
     });
-  }, [allProducts, categoryId, filters]);
+    if (page > 1) params.set('page', String(page));
+    setSearchParams(params, { replace: true });
+  }, [filters, page, setSearchParams]);
 
-  const sortedProducts = useMemo(() => {
-    const sorted = [...filteredProducts];
-    switch (sortOption) {
-      case 'price_low_high':
-        return sorted.sort((a, b) => a.price - b.price);
-      case 'price_high_low':
-        return sorted.sort((a, b) => b.price - a.price);
-      case 'name_asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
-      case 'name_desc':
-        return sorted.sort((a, b) => b.name.localeCompare(a.name));
-      default:
-        return sorted;
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  const { data, isLoading, isFetching } = useQuery(
+    ['products', categoryId, filters, sortOption, page],
+    () =>
+      getProductsPaginated({
+        page,
+        limit: productsPerPage,
+        categoryId,
+        filters,
+        sortOption,
+      }).promise,
+    {
+      keepPreviousData: true,
     }
-  }, [filteredProducts, sortOption]);
-
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * productsPerPage;
-    return sortedProducts.slice(start, start + productsPerPage);
-  }, [sortedProducts, currentPage, productsPerPage]);
-
-  const totalPages = useMemo(
-    () => Math.ceil(sortedProducts.length / productsPerPage),
-    [sortedProducts, productsPerPage]
   );
 
+  const products = data?.products || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / productsPerPage);
+
   return {
-    products: allProducts,
-    filteredProducts,
-    sortedProducts,
-    paginatedProducts,
+    products,
+    total,
     totalPages,
-    loading,
-    error,
+    page,
+    setPage,
+    filters,
+    setFilters,
+    isLoading,
+    isFetching,
   };
 }

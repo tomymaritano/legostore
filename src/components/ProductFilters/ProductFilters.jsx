@@ -47,7 +47,7 @@ const FILTER_CONFIG = [
   { label: "Destacados", key: "highlight", options: ["Exclusivos", "Destacados", "Edición Limitada"] },
 ];
 
-const ProductFilters = ({ filters, setFilters, filteredProducts, products }) => {
+const ProductFilters = ({ filters, setFilters, products }) => {
   const collapses = FILTER_CONFIG.map(() => useDisclosure({ defaultIsOpen: true }));
 
   const [showMoreMap, setShowMoreMap] = useState({});

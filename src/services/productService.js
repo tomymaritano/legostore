@@ -3,6 +3,7 @@ import {
   getProductById as mockGetProductById,
   getProductsByCategory as mockGetProductsByCategory,
   getProductsByFilters as mockGetProductsByFilters,
+  getProductsPaginated as mockGetProductsPaginated,
   getTotalProductsByFilterKey as mockGetTotalProductsByFilterKey,
   getProductsByFiltersExceptKey as mockGetProductsByFiltersExceptKey,
   FILTER_CONFIG,
@@ -54,6 +55,9 @@ export const getProductsByCategory = (category, opts) =>
 export const getProductsByFilters = (filters, opts) =>
   wrapRequest(() => mockGetProductsByFilters(filters), opts);
 
+export const getProductsPaginated = (params, opts) =>
+  wrapRequest(() => mockGetProductsPaginated(params), opts);
+
 export const getTotalProductsByFilterKey = (key, products, opts) =>
   wrapRequest(() => mockGetTotalProductsByFilterKey(key, products), opts);
 
@@ -65,6 +69,7 @@ export const productService = {
   getProductById,
   getProductsByCategory,
   getProductsByFilters,
+  getProductsPaginated,
   getTotalProductsByFilterKey,
   getProductsByFiltersExceptKey,
   FILTER_CONFIG,
