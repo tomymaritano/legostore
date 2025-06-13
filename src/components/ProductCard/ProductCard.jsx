@@ -11,7 +11,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -22,7 +22,10 @@ const ProductCard = ({
   id,
   name,
   price,
+  originalPrice,
   image,
+  imageSecondary,
+  images = [],
   stock,
   category,
   description,
@@ -30,11 +33,12 @@ const ProductCard = ({
   isOnSale,
 }) => {
   const { cart, addItem, wishlist, addToWishlist, removeFromWishlist } = useContext(CartContext);
-
   const toast = useToast();
   const location = useLocation();
 
   const isInWishlist = wishlist.some((prod) => prod.id === id);
+
+  const [activeImage, setActiveImage] = useState(images?.[0] || image);
 
   const handleAddToCart = () => {
     const isInCart = cart.some((prod) => prod.id === id);
@@ -108,18 +112,37 @@ const ProductCard = ({
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
-      minHeight="550px" // Altura mínima fija para consistencia
+      minHeight="550px"
     >
       {/* Imagen + Wishlist */}
       <Box position="relative" w="100%" h="320px">
-        <Box as={RouterLink} to={`/item/${id}`} state={{ backgroundLocation: location }}>
+        <Box
+          as={RouterLink}
+          to={`/item/${id}`}
+          state={{ backgroundLocation: location }}
+          _hover={{}}
+        >
           <Image
-            src={image}
+            src={activeImage}
             alt={name}
             w="100%"
             h="100%"
             objectFit="contain"
             bg="white"
+            transition="all 0.3s ease"
+            _groupHover={{
+              opacity: imageSecondary || images?.[1] ? 0.8 : 1,
+            }}
+            onMouseEnter={() => {
+              if (imageSecondary) {
+                setActiveImage(imageSecondary);
+              } else if (images?.[1]) {
+                setActiveImage(images[1]);
+              }
+            }}
+            onMouseLeave={() => {
+              setActiveImage(images?.[0] || image);
+            }}
           />
         </Box>
 
@@ -172,15 +195,59 @@ const ProductCard = ({
         />
       </Box>
 
+      {/* Thumbnails */}
+      {images?.length > 1 && (
+        <Flex px={4} pt={2} pb={1} gap={2} justify="center">
+          {images.map((imgSrc, idx) => (
+            <Box
+              key={idx}
+              as="button"
+              borderRadius="md"
+              border={activeImage === imgSrc ? "2px solid #319795" : "1px solid #e2e8f0"}
+              p="2px"
+              transition="all 0.2s ease"
+              _hover={{
+                borderColor: "#319795",
+              }}
+              onClick={() => setActiveImage(imgSrc)}
+            >
+              <Image
+                src={imgSrc}
+                boxSize="40px"
+                objectFit="cover"
+                borderRadius="md"
+              />
+            </Box>
+          ))}
+        </Flex>
+      )}
+
       {/* Contenido */}
       <Stack p={4} spacing={3} flexGrow={1}>
         <Heading as="h3" size="md" noOfLines={2}>
           {name}
         </Heading>
 
-        <Text fontSize="lg" fontWeight="bold" color="teal.600">
-          ${price}
-        </Text>
+        {/* Precio PRO */}
+        <Flex align="center" gap={2} flexWrap="wrap">
+          {isOnSale && originalPrice && (
+            <Text
+              fontSize="md"
+              color="gray.500"
+              as="s"
+              fontWeight="medium"
+            >
+              ${originalPrice}
+            </Text>
+          )}
+          <Text
+            fontSize="lg"
+            fontWeight="bold"
+            color={isOnSale ? "orange.500" : "teal.600"}
+          >
+            ${price}
+          </Text>
+        </Flex>
 
         <Text fontSize="sm" color="gray.600" noOfLines={2}>
           {description}

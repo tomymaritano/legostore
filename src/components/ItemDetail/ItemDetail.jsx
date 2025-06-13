@@ -1,98 +1,247 @@
-import ItemCount from "../ItemCount/ItemCount";
+import {
+  Box,
+  Image,
+  Text,
+  Heading,
+  Stack,
+  Button,
+  Badge,
+  Flex,
+  IconButton,
+  useToast,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import { FaHeart, FaRegHeart, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { CartContext } from "../CartContext/CartContext";
 
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  Image,
-  Heading,
-  Text,
-  Stack,
-  Link,
-  Button,
-  Divider,
-  Badge,
-  Box,
-} from "@chakra-ui/react";
-import { motion } from "framer-motion";
+const ItemDetail = ({ product }) => {
+  const {
+    id,
+    name,
+    price,
+    originalPrice,
+    images = [product.img], // fallback
+    stock,
+    shortDescription,
+    description,
+    category,
+    rating,
+  } = product;
 
-const MotionImage = motion(Image);
+  const { cart, addItem, wishlist, addToWishlist, removeFromWishlist } = useContext(CartContext);
+  const toast = useToast();
 
-const ItemDetail = ({ id, name, img, category, description, price, stock, isNew, isOnSale }) => {
-  const [quantityAdded, setQuantityAdded] = useState(0);
+  const isInWishlist = wishlist.some((prod) => prod.id === id);
+  const isInCart = cart.some((prod) => prod.id === id);
 
-  const { addItem } = useContext(CartContext);
+  const handleAddToCart = () => {
+    if (isInCart) {
+      toast({
+        title: "Producto ya en el carrito.",
+        description: `${name} ya estaba en tu carrito.`,
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } else {
+      addItem({ id, name, price, images: images[0] }, 1);
+      toast({
+        title: "Producto agregado.",
+        description: `${name} se agregó al carrito.`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  };
 
-  const handleOnAdd = (quantity) => {
-    setQuantityAdded(quantity);
+  const handleToggleWishlist = () => {
+    if (isInWishlist) {
+      removeFromWishlist(id);
+      toast({
+        title: "Removido de favoritos.",
+        description: `${name} se removió de favoritos.`,
+        status: "info",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } else {
+      addToWishlist({
+        id,
+        name,
+        price,
+        image: images[0],
+        stock,
+        description,
+        category,
+      });
+      toast({
+        title: "Agregado a favoritos.",
+        description: `${name} se agregó a favoritos.`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  };
 
-    const item = {
-      id,
-      name,
-      price,
-    };
+  // Galería
+  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const thumbnailSize = useBreakpointValue({ base: "50px", md: "60px" });
 
-    addItem(item, quantity);
+  // Rating stars
+  const renderStars = () => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return (
+      <Flex align="center" gap={1}>
+        {[...Array(fullStars)].map((_, i) => (
+          <FaStar key={`full-${i}`} color="#ECC94B" />
+        ))}
+        {hasHalfStar && <FaStarHalfAlt color="#ECC94B" />}
+        {[...Array(emptyStars)].map((_, i) => (
+          <FaRegStar key={`empty-${i}`} color="#ECC94B" />
+        ))}
+      </Flex>
+    );
   };
 
   return (
-    <Card maxW="md" border="1px" boxShadow="md" mx="auto">
-      <CardBody
-        display={"flex"}
-        flexDirection={"column"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        p={6}
-      >
-        {/* Badge */}
-        <Box w="100%" mb={2}>
-          {isNew && (
-            <Badge colorScheme="teal" mr={2}>
+    <Flex
+      direction={{ base: "column", md: "row" }}
+      gap={8}
+      align="start"
+      bg="white"
+      p={6}
+      borderRadius="lg"
+      boxShadow="md"
+    >
+      {/* Galería */}
+      <Box flex="1" w="100%">
+        <Image
+          src={selectedImage}
+          alt={name}
+          w="100%"
+          maxH="400px"
+          objectFit="contain"
+          mb={4}
+          bg="white"
+          borderRadius="md"
+          boxShadow="base"
+        />
+
+        <Flex gap={2} wrap="wrap">
+          {images.map((img, i) => (
+            <Image
+              key={i}
+              src={img}
+              alt={`${name} ${i + 1}`}
+              boxSize={thumbnailSize}
+              objectFit="contain"
+              borderRadius="md"
+              border={img === selectedImage ? "2px solid teal" : "1px solid gray.200"}
+              cursor="pointer"
+              onClick={() => setSelectedImage(img)}
+              transition="all 0.2s"
+              _hover={{ opacity: 0.8 }}
+            />
+          ))}
+        </Flex>
+      </Box>
+
+      {/* Info producto */}
+      <Stack spacing={4} flex="1" w="100%">
+        <Flex justify="space-between" align="start">
+          <Heading as="h2" size="lg">
+            {name}
+          </Heading>
+          <IconButton
+            icon={isInWishlist ? <FaHeart /> : <FaRegHeart />}
+            colorScheme={isInWishlist ? "pink" : "gray"}
+            variant="ghost"
+            size="lg"
+            onClick={handleToggleWishlist}
+            aria-label="Toggle wishlist"
+          />
+        </Flex>
+
+        {/* Badges */}
+        <Flex gap={2}>
+          {product.isNew && (
+            <Badge colorScheme="teal" borderRadius="full" px={2} py={1}>
               New
             </Badge>
           )}
-          {isOnSale && (
-            <Badge colorScheme="orange">
+          {product.isOnSale && (
+            <Badge colorScheme="orange" borderRadius="full" px={2} py={1}>
               Sale
             </Badge>
           )}
-        </Box>
+          {category && (
+            <Badge variant="subtle" colorScheme="gray" borderRadius="full" px={2} py={1}>
+              {category.toUpperCase()}
+            </Badge>
+          )}
+        </Flex>
 
-        <MotionImage
-          width={"60%"}
-          src={img}
-          alt={description}
-          borderRadius="lg"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.5 }}
-          mb={4}
-        />
-
-        <Stack mt="3" spacing="3" textAlign="center">
-          <Heading size="md">{name}</Heading>
-          <Text color="gray.600" fontSize="sm">
-            {category}
-          </Text>
-          <Text>{description}</Text>
-          <Text color="blue.600" fontSize="xl" fontWeight="bold">
-            {price} kr.
-          </Text>
-        </Stack>
-      </CardBody>
-      <Divider />
-      <CardFooter justifyContent="center" py={4}>
-        {quantityAdded > 0 ? (
-          <Button as={NavLink} to="/cart" colorScheme="teal" size="lg">
-            Finalizar compra
-          </Button>
-        ) : (
-          <ItemCount initial={1} stock={stock} onAdd={handleOnAdd} />
+        {/* Rating */}
+        {rating && (
+          <Flex align="center" gap={2}>
+            {renderStars()}
+            <Text fontSize="sm" color="gray.500">
+              ({rating.toFixed(1)})
+            </Text>
+          </Flex>
         )}
-      </CardFooter>
-    </Card>
+
+        {/* Precio */}
+        <Flex align="center" gap={3} flexWrap="wrap">
+          {product.isOnSale && originalPrice && (
+            <Text fontSize="lg" color="gray.500" as="s">
+              ${originalPrice}
+            </Text>
+          )}
+          <Text fontSize="2xl" fontWeight="bold" color={product.isOnSale ? "orange.500" : "teal.600"}>
+            ${price}
+          </Text>
+        </Flex>
+
+        {/* Stock */}
+        <Text fontSize="sm" color={stock > 0 ? "gray.600" : "red.500"}>
+          {stock > 0 ? `Stock disponible: ${stock}` : "Sin stock"}
+        </Text>
+
+        {/* Short desc */}
+        {shortDescription && (
+          <Text fontSize="md" color="gray.700" fontWeight="medium">
+            {shortDescription}
+          </Text>
+        )}
+
+        {/* Descripción */}
+        <Text fontSize="sm" color="gray.600" lineHeight="tall">
+          {description}
+        </Text>
+
+        {/* Botón agregar */}
+        <Button
+          colorScheme="teal"
+          size="lg"
+          w="100%"
+          onClick={handleAddToCart}
+          isDisabled={stock === 0}
+        >
+          {stock === 0 ? "Sin stock" : "Agregar al carrito"}
+        </Button>
+      </Stack>
+    </Flex>
   );
 };
 

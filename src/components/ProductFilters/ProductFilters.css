@@ -1,0 +1,31 @@
+/* ProductFilters.css */
+.product-filters-section {
+  border-bottom: 1px solid #e2e8f0; /* Gray 200 */
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.product-filters-section:last-child {
+  border-bottom: none;
+}
+
+.product-filters-toggle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2d3748; /* Gray 700 */
+  cursor: pointer;
+}
+
+.product-filters-checkbox {
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.product-filters-checkbox:hover {
+  background: #f7fafc; /* Gray 50 */
+}
