@@ -16,15 +16,15 @@ import {
   Progress,
   useToast,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { CartContext } from "../CartContext/CartContext";
-import { FaTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
+import { FaTrashAlt, FaPlus, FaMinus, FaTruck } from "react-icons/fa";
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const {
     cart,
     totalQuantity,
-    total,
+    totalPrice, // <<< este es el que sí tenés en el context
     increaseQuantity,
     decreaseQuantity,
     removeItem,
@@ -48,8 +48,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
   // Envío gratis
   const FREE_SHIPPING_THRESHOLD = 1000;
-  const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
-  const progressToFreeShipping = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const safeTotal = Number(totalPrice) || 0;
+  const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - safeTotal, 0);
+  const progressToFreeShipping = Math.min((safeTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const progressLabel = `${Math.floor(progressToFreeShipping)}%`;
 
   return (
     <Drawer placement="right" onClose={onClose} isOpen={isOpen} size="sm">
@@ -79,19 +81,45 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 fontWeight="medium"
               >
                 {amountToFreeShipping === 0 ? (
-                  <Text color="green.600">🎉 ¡Tu pedido califica para envío gratis!</Text>
+                  <>
+                    <HStack justify="center" mb={2}>
+                      <FaTruck color="#38A169" size="1.2em" />
+                      <Text color="green.600" fontWeight="bold">
+                        ¡Tu pedido califica para envío gratis!
+                      </Text>
+                    </HStack>
+                    <Progress
+                      value={100}
+                      colorScheme="green"
+                      size="sm"
+                      borderRadius="md"
+                      transition="all 0.5s ease-in-out"
+                      hasStripe
+                      isAnimated
+                    />
+                  </>
                 ) : (
                   <>
-                    <Text mb={2}>
-                      🚚 Te faltan <strong>${amountToFreeShipping.toLocaleString("es-AR")}</strong> para obtener envío gratis.
-                    </Text>
+                    <HStack justify="center" mb={2}>
+                      <FaTruck color="#319795" size="1.2em" />
+                      <Text>
+                        Te faltan{" "}
+                        <strong>${amountToFreeShipping.toLocaleString("es-AR")}</strong>{" "}
+                        para obtener envío gratis.
+                      </Text>
+                    </HStack>
                     <Progress
                       value={progressToFreeShipping}
                       colorScheme="teal"
                       size="sm"
                       borderRadius="md"
                       transition="all 0.5s ease-in-out"
+                      hasStripe
+                      isAnimated
                     />
+                    <Text mt={1} fontSize="xs" color="gray.600">
+                      Progreso: {progressLabel} hacia el envío gratis
+                    </Text>
                   </>
                 )}
               </Box>
@@ -118,7 +146,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
                             {item.name}
                           </Text>
                           <Text fontSize="sm" color="gray.500">
-                            Precio: ${item.price} | Subtotal: ${(item.price * item.quantity).toLocaleString("es-AR")}
+                            Precio: ${item.price} | Subtotal: $
+                            {(item.price * item.quantity).toLocaleString("es-AR")}
                           </Text>
                           <HStack mt={2}>
                             <IconButton
@@ -162,7 +191,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         <DrawerFooter flexDir="column" alignItems="stretch" borderTop="1px solid #e2e8f0">
           <Box w="100%" mb={3}>
             <Text fontSize="lg" fontWeight="bold">
-              Total: ${(total ?? 0).toLocaleString("es-AR")}
+              Total: ${safeTotal.toLocaleString("es-AR")}
             </Text>
           </Box>
           <Button

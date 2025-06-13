@@ -10,8 +10,16 @@ export const CartProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
   // --- Cart totals --- //
-  const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const totalPrice = cart.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const totalQuantity = cart.reduce(
+    (acc, item) => acc + (Number(item.quantity) || 0),
+    0
+  );
+
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+    0
+  );
+
   const totalWishlistQuantity = wishlist.length;
 
   // --- Cart methods --- //
@@ -34,7 +42,10 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === itemId
-          ? { ...item, quantity: item.quantity + 1 }
+          ? {
+              ...item,
+              quantity: Math.max((Number(item.quantity) || 1) + 1, 1),
+            }
           : item
       )
     );
@@ -43,8 +54,11 @@ export const CartProvider = ({ children }) => {
   const decreaseQuantity = (itemId) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === itemId && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
+        item.id === itemId
+          ? {
+              ...item,
+              quantity: Math.max((Number(item.quantity) || 1) - 1, 1),
+            }
           : item
       )
     );

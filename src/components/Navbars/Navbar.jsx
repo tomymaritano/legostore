@@ -373,12 +373,20 @@ const NavBar = () => {
       </Container>
 
       {/* Mobile Drawer */}
-      <Drawer placement="left" onClose={onMenuClose} isOpen={isMenuOpen}>
+      <Drawer placement="left" onClose={onMenuClose} isOpen={isMenuOpen} size="full">
         <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerBody mt={10}>
-            <VStack spacing={6} align="start">
+        <DrawerContent bg="brand.400">
+          <DrawerCloseButton size="lg" top="1.5rem" right="1.5rem" />
+          <DrawerBody pt={10} px={6}>
+            {/* Header logo */}
+            <Flex justifyContent="center" mb={8}>
+              <Link as={NavLink} to="/" onClick={onMenuClose}>
+                <Image src={logo} h="50px" />
+              </Link>
+            </Flex>
+
+            {/* Menu items */}
+            <VStack spacing={6} align="stretch" mb={10}>
               {[
                 { label: "Helmet", path: "/category/helmet" },
                 { label: "Brickheadz", path: "/category/brickheadz" },
@@ -391,28 +399,46 @@ const NavBar = () => {
                   to={item.path}
                   onClick={onMenuClose}
                   variant="ghost"
-                  fontWeight="bold"
-                  fontSize="lg"
-                  w="100%"
+                  size="lg"
+                  fontSize="xl"
+                  bg={'brand.300'}
                   justifyContent="flex-start"
+                  borderColor={'white.100'}
+                  w="100%"
+                  py={6}
                 >
                   {item.label}
                 </Button>
               ))}
-              <Divider />
-              <Button
-                variant="solid"
-                colorScheme="teal"
-                fontWeight="bold"
-                w="100%"
-                onClick={() => {
-                  onMenuClose();
-                  onCartOpen();
-                }}
-              >
-                Ver Carrito ({totalQuantity})
-              </Button>
             </VStack>
+
+            {/* Footer - resumen */}
+            <Box mt="auto" py={6}>
+              <VStack spacing={4}>
+                <Button
+                  variant="solid"
+                  colorScheme="blue"
+                  size="lg"
+                  w="100%"
+                  onClick={() => {
+                    onMenuClose();
+                    onCartOpen();
+                  }}
+                >
+                  Ver Carrito ({totalQuantity})
+                </Button>
+                <Button
+                  as={NavLink}
+                  to="/wishlist"
+                  variant="solid"
+                  size="lg"
+                  w="100%"
+                  onClick={onMenuClose}
+                >
+                  Favoritos ({totalWishlistQuantity})
+                </Button>
+              </VStack>
+            </Box>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
