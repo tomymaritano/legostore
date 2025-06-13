@@ -119,6 +119,7 @@ const [activeImage, setActiveImage] = useState(
       flexDirection="column"
       justifyContent="space-between"
       minHeight="550px"
+      maxW={'400px'}
     >
       {/* Imagen + Wishlist */}
       <Box position="relative" w="100%" h="320px">
