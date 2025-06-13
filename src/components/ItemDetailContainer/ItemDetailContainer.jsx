@@ -1,10 +1,10 @@
 import {
-  Container,
-  Heading,
-  Spinner,
-  Center,
-  Text,
-  Box,
+    Container,
+    Heading,
+    Spinner,
+    Center,
+    Text,
+    Box,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -15,45 +15,45 @@ import { motion } from "framer-motion";
 const MotionBox = motion(Box);
 
 const ItemDetailContainer = () => {
-  const { productId } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const { productId } = useParams();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      const data = await getProductById(productId);
-      setProduct(data);
-      setLoading(false);
-    };
+    useEffect(() => {
+        const fetchProduct = async () => {
+            setLoading(true);
+            const data = await getProductById(productId);
+            setProduct(data);
+            setLoading(false);
+        };
 
-    fetchProduct();
-  }, [productId]);
+        fetchProduct();
+    }, [productId]);
 
-  return (
-    <Container maxW="container.lg" py={{ base: 6, md: 12 }}>
-      {loading ? (
-        <Center py={10}>
-          <Spinner size="xl" />
-        </Center>
-      ) : product ? (
-        <MotionBox
-          key={product.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <ItemDetail product={product} />
-        </MotionBox>
-      ) : (
-        <Center py={10}>
-          <Text fontSize="lg" color="red.500">
-            Producto no encontrado.
-          </Text>
-        </Center>
-      )}
-    </Container>
-  );
+    return (
+        <Container maxW="container.lg" py={{ base: 6, md: 6 }}>
+            {loading ? (
+                <Center py={10}>
+                    <Spinner size="xl" />
+                </Center>
+            ) : product ? (
+                <MotionBox
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                    <ItemDetail product={product} />
+                </MotionBox>
+            ) : (
+                <Center py={10}>
+                    <Text fontSize="lg" color="red.500">
+                        Producto no encontrado.
+                    </Text>
+                </Center>
+            )}
+        </Container>
+    );
 };
 
 export default ItemDetailContainer;

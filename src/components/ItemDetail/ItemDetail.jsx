@@ -133,8 +133,6 @@ const ItemDetail = ({ product }) => {
           objectFit="contain"
           mb={4}
           bg="white"
-          borderRadius="md"
-          boxShadow="base"
         />
 
         <Flex gap={2} wrap="wrap">

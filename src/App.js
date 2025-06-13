@@ -8,8 +8,8 @@ import NotFound from "./components/NotFound/NotFound";
 import Layout from "./components/Layout/Layout";
 import Wishlist from "./components/Wishlist/Wishlist";
 import SearchResults from "./components/SearchResults/SearchResults";
+import ItemDetailPage from "./components/ItemDetail/ItemDetailPage";
 
-// Wrapper para poder usar useLocation
 function AppWrapper() {
   return (
     <BrowserRouter>
@@ -19,6 +19,7 @@ function AppWrapper() {
     </BrowserRouter>
   );
 }
+
 function AppContent() {
   const location = useLocation();
   const state = location.state;
@@ -29,20 +30,31 @@ function AppContent() {
         <Route element={<Layout />}>
           <Route path="/" element={<ItemListContainer />} />
           <Route path="/category/:categoryId" element={<ItemListContainer />} />
-          <Route path="/item/:itemId" element={<ItemDetailContainer />} />
+          <Route path="/item/:productId" element={<ItemDetailPage />} /> {/* solo se usará si no hay modal */}
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/search" element={<SearchResults />} /> {/* ✅ */}
+          <Route path="/search" element={<SearchResults />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
 
-      {/* Modal Route */}
       {state?.backgroundLocation && (
         <Routes>
           <Route
-            path="/item/:itemId"
-            element={<ItemDetailContainer isModal />}
+            path="/item/:productId"
+            element={
+              <div style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)', // overlay gris
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 9999, // muy alto
+              }}>
+                <ItemDetailContainer isModal />
+              </div>
+            }
           />
         </Routes>
       )}

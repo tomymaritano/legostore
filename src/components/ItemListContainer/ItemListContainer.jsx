@@ -15,6 +15,7 @@ import {
   DrawerCloseButton,
   DrawerBody,
   useDisclosure,
+  Skeleton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getProducts } from "../Service/asyncMock";
@@ -22,6 +23,8 @@ import ProductList from "../ProductList/ProductList";
 import ProductFilters from "../ProductFilters/ProductFilters";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 
 const MotionBox = motion(Box);
 
@@ -29,21 +32,21 @@ const ItemListContainer = ({ greeting }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("recommended");
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 9;
+    const { categoryId } = useParams();
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Drawer filtros mobile
-
-  const parseFiltersFromParams = () => {
-    return {
-      type: searchParams.getAll("type"),
-      age: searchParams.getAll("age"),
-      theme: searchParams.getAll("theme"),
-      interests: searchParams.getAll("interests"),
-      pieces: searchParams.getAll("pieces"),
-      highlight: searchParams.getAll("highlight"),
-    };
-  };
+  const parseFiltersFromParams = () => ({
+    type: searchParams.getAll("type"),
+    age: searchParams.getAll("age"),
+    theme: searchParams.getAll("theme"),
+    interests: searchParams.getAll("interests"),
+    pieces: searchParams.getAll("pieces"),
+    highlight: searchParams.getAll("highlight"),
+  });
 
   const [filters, setFilters] = useState(parseFiltersFromParams);
 
@@ -57,6 +60,7 @@ const ItemListContainer = ({ greeting }) => {
       values.forEach((val) => params.append(key, val));
     });
     setSearchParams(params, { replace: true });
+    setCurrentPage(1); // Reset page cuando cambian filtros
   }, [filters, setSearchParams]);
 
   useEffect(() => {
@@ -71,6 +75,8 @@ const ItemListContainer = ({ greeting }) => {
   }, []);
 
   const filteredProducts = products.filter((prod) => {
+      if (categoryId && prod.category !== categoryId) return false; // 🔥 importante
+
     if (filters.type.length > 0 && !filters.type.includes(prod.type)) return false;
     if (filters.age.length > 0 && !filters.age.includes(prod.age)) return false;
     if (filters.theme.length > 0 && !filters.theme.includes(prod.theme)) return false;
@@ -95,6 +101,21 @@ const ItemListContainer = ({ greeting }) => {
     }
   });
 
+  const paginatedProducts = sortedProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  // Scroll to top cuando cambio filtros o sort o page
+  useEffect(() => {
+    window.scrollTo({ top: 200, behavior: "smooth" });
+  }, [filters, sortOption, currentPage]);
+
+  const totalFiltersApplied = Object.values(filters).reduce(
+    (acc, arr) => acc + arr.length,
+    0
+  );
+
   return (
     <Container maxW="1920px" py={{ base: 6, md: 12 }}>
       {greeting && (
@@ -111,9 +132,16 @@ const ItemListContainer = ({ greeting }) => {
       )}
 
       {loading ? (
-        <Center py={10}>
-          <Spinner size="xl" />
-        </Center>
+        <Flex gap={6} wrap="wrap" justify="center">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              height="450px"
+              width="300px"
+              borderRadius="lg"
+            />
+          ))}
+        </Flex>
       ) : (
         <Flex align="start" gap={6} flexDirection={{ base: "column", md: "row" }}>
           {/* Sidebar filtros desktop */}
@@ -129,20 +157,26 @@ const ItemListContainer = ({ greeting }) => {
 
           {/* Productos */}
           <Box flex="1">
-            {/* Header mobile */}
             <Flex justify="space-between" align="center" mb={4} flexWrap="wrap" gap={2}>
-              <Text fontSize="lg" fontWeight="bold">
-                Mostrando {filteredProducts.length} productos de {products.length}
-              </Text>
+              <Flex flexDir="column">
+                <Text fontSize="lg" fontWeight="bold">
+                  Mostrando {filteredProducts.length} productos de {products.length}
+                </Text>
+                {totalFiltersApplied > 0 && (
+                  <Text fontSize="sm" color="teal.600">
+                    {totalFiltersApplied} filtro{totalFiltersApplied > 1 ? "s" : ""} aplicado{totalFiltersApplied > 1 ? "s" : ""}
+                  </Text>
+                )}
+              </Flex>
 
               <Flex gap={2}>
-                {/* Botón abrir Drawer filtros en mobile */}
                 <Button
                   variant="outline"
                   colorScheme="teal"
                   display={{ base: "inline-flex", md: "none" }}
                   onClick={onOpen}
                   size="sm"
+                  aria-label="Abrir filtros"
                 >
                   Filtrar
                 </Button>
@@ -162,7 +196,7 @@ const ItemListContainer = ({ greeting }) => {
               </Flex>
             </Flex>
 
-            {sortedProducts.length === 0 ? (
+            {paginatedProducts.length === 0 ? (
               <Center flexDir="column" py={20} color="gray.500">
                 <Image
                   src="https://cdn-icons-png.flaticon.com/512/192/192292.png"
@@ -176,15 +210,44 @@ const ItemListContainer = ({ greeting }) => {
                 </Text>
               </Center>
             ) : (
-              <MotionBox
-                key={JSON.stringify(filters) + sortOption}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              >
-                <ProductList products={sortedProducts} />
-              </MotionBox>
+              <>
+                <MotionBox
+                  key={JSON.stringify(filters) + sortOption + currentPage}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <ProductList products={paginatedProducts} />
+                </MotionBox>
+
+                {/* Paginación */}
+                <Flex justify="center" mt={8} gap={2}>
+                  <Button
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    isDisabled={currentPage === 1}
+                    aria-label="Página anterior"
+                  >
+                    Anterior
+                  </Button>
+                  <Text fontSize="sm" fontWeight="medium">
+                    Página {currentPage} / {Math.ceil(sortedProducts.length / productsPerPage)}
+                  </Text>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      setCurrentPage((p) =>
+                        Math.min(p + 1, Math.ceil(sortedProducts.length / productsPerPage))
+                      )
+                    }
+                    isDisabled={currentPage === Math.ceil(sortedProducts.length / productsPerPage)}
+                    aria-label="Página siguiente"
+                  >
+                    Siguiente
+                  </Button>
+                </Flex>
+              </>
             )}
           </Box>
         </Flex>
@@ -195,7 +258,7 @@ const ItemListContainer = ({ greeting }) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerBody mt={10}>
+          <DrawerBody mt={10} px={4}>
             <ProductFilters filters={filters} setFilters={setFilters} />
           </DrawerBody>
         </DrawerContent>

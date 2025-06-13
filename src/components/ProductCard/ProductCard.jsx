@@ -37,7 +37,6 @@ const ProductCard = ({
   const location = useLocation();
 
   const isInWishlist = wishlist.some((prod) => prod.id === id);
-
   const [activeImage, setActiveImage] = useState(images?.[0] || image);
 
   const handleAddToCart = () => {
@@ -116,11 +115,11 @@ const ProductCard = ({
     >
       {/* Imagen + Wishlist */}
       <Box position="relative" w="100%" h="320px">
+        {/* Imagen como Link → abre modal */}
         <Box
           as={RouterLink}
           to={`/item/${id}`}
-          state={{ backgroundLocation: location }}
-          _hover={{}}
+          state={{ backgroundLocation: location }} // modal sólo en imagen
         >
           <Image
             src={activeImage}
@@ -129,7 +128,7 @@ const ProductCard = ({
             h="100%"
             objectFit="contain"
             bg="white"
-            transition="all 0.3s ease"
+            transition="opacity 0.3s ease"
             _groupHover={{
               opacity: imageSecondary || images?.[1] ? 0.8 : 1,
             }}
@@ -228,7 +227,7 @@ const ProductCard = ({
           {name}
         </Heading>
 
-        {/* Precio PRO */}
+        {/* Precio */}
         <Flex align="center" gap={2} flexWrap="wrap">
           {isOnSale && originalPrice && (
             <Text
@@ -270,10 +269,10 @@ const ProductCard = ({
           Agregar al carrito
         </Button>
 
+        {/* Botón "Ver detalle" → SIN state → abre página completa */}
         <Button
           as={RouterLink}
           to={`/item/${id}`}
-          state={{ backgroundLocation: location }}
           variant="outline"
           colorScheme="gray"
           size="md"
