@@ -19,3 +19,72 @@ This app is a small e‑commerce demo built with React. It showcases a catalog o
 - **React Router** – handles client side routing between pages of the store.
 
 Other dependencies include FontAwesome icons and Framer Motion for small animations. See `package.json` for the full list.
+
+## Project structure
+
+```
+src/
+  features/
+    products/
+      components/
+      hooks/
+      services/
+      tests/
+    cart/
+      components/
+      hooks/
+      services/
+      tests/
+    wishlist/
+      components/
+      hooks/
+      services/
+      tests/
+    auth/
+      components/
+      hooks/
+      services/
+      tests/
+  components/      # shared UI elements (layout, navbar, etc.)
+  hooks/           # generic reusable hooks
+  services/        # shared utilities (e.g. apiClient)
+```
+
+Components consume hooks and should avoid data fetching or direct business logic. Hooks use services to interact with APIs or mocks.
+
+## Caching with React Query
+
+`useProducts` leverages **@tanstack/react-query** to cache product lists locally.
+Filters are synchronized with the URL search params and pagination is handled
+client-side. Changing the page triggers a small loading state while data is
+retrieved from the cache.
+
+## Service pattern
+
+All API calls are made through `fetchWithRetry` exposed by `src/services/apiClient.js`.
+This helper provides:
+
+1. **Error handling** – non‑OK responses throw an error with the HTTP status.
+2. **Retry support** – automatic retries with exponential backoff can be configured per request.
+3. **Cancellation** – each call returns a `cancel` function using `AbortController` to abort the underlying `fetch`.
+
+Services such as `productService` wrap these helpers and expose domain specific functions:
+
+```javascript
+import { getProducts } from './features/products/services/productService';
+
+const { promise, cancel } = getProducts({ retries: 2 });
+promise.then(setProducts).catch(console.error);
+
+// optional cleanup
+cancel();
+```
+
+Components never call `fetch` directly; they consume hooks which use these services internally.
+
+## Separation of Concerns guidelines
+
+- **Components**: presentational only. They render UI and consume hooks but should not contain data fetching or business logic.
+- **Hooks**: encapsulate reusable logic such as data fetching, transformation and side effects.
+- **Services**: provide the interface to external APIs or mocks.
+- **Context**: reserved for truly global client state like the cart or theme. Do not use it for server state; prefer React Query instead.

@@ -33,14 +33,16 @@ import { FaBars, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { SearchIcon } from "@chakra-ui/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../CartContext/CartContext";
-import CartDrawer from "../Cart/CartDrawer";
-import { getProducts } from "../Service/asyncMock";
+import { useEffect, useState } from "react";
+import useCart from "../../features/cart/hooks/useCart";
+import useWishlist from "../../features/wishlist/hooks/useWishlist";
+import CartDrawer from "../../features/cart/components/Cart/CartDrawer";
+import { getProducts } from "../../features/products/services/productService";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
-  const { totalQuantity, totalWishlistQuantity, wishlist } = useContext(CartContext);
+  const { totalQuantity } = useCart();
+  const { totalWishlistQuantity, wishlist } = useWishlist();
 
   const {
     isOpen: isMenuOpen,
@@ -66,11 +68,11 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const data = await getProducts();
-      setProducts(data);
-    };
-    fetchProducts();
+    const { promise, cancel } = getProducts({ retries: 2 });
+    promise
+      .then((data) => setProducts(data))
+      .catch((err) => console.error(err));
+    return cancel;
   }, []);
 
   const filteredProducts = products.filter((prod) =>
