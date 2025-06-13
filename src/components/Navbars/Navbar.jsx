@@ -21,10 +21,13 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   PopoverBody,
+  PopoverHeader,
+  PopoverFooter,
   Text,
   Button,
   Badge,
   Container,
+  HStack,
 } from "@chakra-ui/react";
 import { FaBars, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -37,7 +40,7 @@ import { getProducts } from "../Service/asyncMock";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
-  const { totalQuantity, totalWishlistQuantity } = useContext(CartContext);
+  const { totalQuantity, totalWishlistQuantity, wishlist } = useContext(CartContext);
 
   const {
     isOpen: isMenuOpen,
@@ -232,32 +235,102 @@ const NavBar = () => {
               </Popover>
             </Box>
 
-            {/* Wishlist */}
-            <Box position="relative">
-              <IconButton
-                icon={<FaHeart />}
-                variant="ghost"
-                size="md"
-                as={NavLink}
-                to="/wishlist"
-                borderRadius="full"
-                _hover={{ bg: "gray.100" }}
-              />
-              {totalWishlistQuantity > 0 && (
-                <Badge
-                  position="absolute"
-                  top="0"
-                  right="0"
-                  bg="pink.500"
-                  color="white"
-                  borderRadius="full"
-                  fontSize="10px"
-                  px={1}
-                >
-                  {totalWishlistQuantity}
-                </Badge>
-              )}
-            </Box>
+            {/* Wishlist Popover */}
+            <Popover trigger="hover" placement="bottom-end">
+              <PopoverTrigger>
+                <Box position="relative" cursor="pointer">
+                  <IconButton
+                    icon={<FaHeart />}
+                    aria-label="Favoritos"
+                    variant="ghost"
+                    size="md"
+                    borderRadius="full"
+                    _hover={{ bg: "gray.100" }}
+                  />
+                  {totalWishlistQuantity > 0 && (
+                    <Badge
+                      position="absolute"
+                      top="0"
+                      right="0"
+                      bg="pink.500"
+                      color="white"
+                      borderRadius="full"
+                      fontSize="10px"
+                      px={1}
+                    >
+                      {totalWishlistQuantity}
+                    </Badge>
+                  )}
+                </Box>
+              </PopoverTrigger>
+
+              <PopoverContent w="320px" zIndex="popover">
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader fontWeight="bold">Favoritos</PopoverHeader>
+                <PopoverBody>
+                  {totalWishlistQuantity === 0 ? (
+                    <Text>No tienes productos en favoritos.</Text>
+                  ) : (
+                    <VStack align="stretch" spacing={3}>
+                      {wishlist.slice(0, 3).map((item) => {
+                        const productImage =
+                          item.image || item.img || (item.images?.[0]) || "https://via.placeholder.com/50";
+
+                        return (
+                          <Box
+                            key={item.id}
+                            as={NavLink}
+                            to={`/item/${item.id}`}
+                            display="block"
+                            borderRadius="md"
+                            _hover={{ bg: "gray.100", textDecoration: "none" }}
+                            transition="all 0.2s ease"
+                            p={2}
+                          >
+                            <HStack spacing={3}>
+                              <Image
+                                src={productImage}
+                                alt={item.name}
+                                boxSize="50px"
+                                objectFit="contain"
+                                borderRadius="md"
+                                bg="gray.50"
+                              />
+                              <Box flex="1" minW="0">
+                                <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                                  {item.name}
+                                </Text>
+                                <Text fontSize="sm" color="gray.500">
+                                  ${item.price?.toLocaleString("es-AR")}
+                                </Text>
+                              </Box>
+                            </HStack>
+                          </Box>
+                        );
+                      })}
+                      {wishlist.length > 3 && (
+                        <Text fontSize="sm" color="gray.500" textAlign="center" mt={1}>
+                          + {wishlist.length - 3} productos más
+                        </Text>
+                      )}
+                    </VStack>
+                  )}
+                </PopoverBody>
+                <PopoverFooter display="flex" justifyContent="center" alignItems="center">
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    as={NavLink}
+                    to="/wishlist"
+                    transition="all 0.2s ease"
+                    _hover={{ transform: "translateY(-1px)" }}
+                  >
+                    Ver todos los favoritos
+                  </Button>
+                </PopoverFooter>
+              </PopoverContent>
+            </Popover>
 
             {/* Cart */}
             <Box position="relative">

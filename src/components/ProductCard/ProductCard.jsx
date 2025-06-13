@@ -24,6 +24,7 @@ const ProductCard = ({
   name,
   price,
   originalPrice,
+  img,
   image,
   imageSecondary,
   images = [],
@@ -38,7 +39,9 @@ const ProductCard = ({
   const location = useLocation();
 
   const isInWishlist = wishlist.some((prod) => prod.id === id);
-  const [activeImage, setActiveImage] = useState(images?.[0] || image);
+const [activeImage, setActiveImage] = useState(
+  images?.[0] || image || img
+);
 
   const handleAddToCart = () => {
     const isInCart = cart.some((prod) => prod.id === id);
@@ -50,10 +53,11 @@ const ProductCard = ({
         status: "warning",
         duration: 2000,
         isClosable: true,
-        position: "top-right",
+        position: "bottom-right",
       });
     } else {
-      addItem({ id, name, price, image }, 1);
+      addItem({ id, name, price, image: activeImage }, 1);
+
 
       toast({
         title: "Producto agregado.",
@@ -61,7 +65,7 @@ const ProductCard = ({
         status: "success",
         duration: 2000,
         isClosable: true,
-        position: "top-right",
+        position: "bottom-right",
       });
     }
   };

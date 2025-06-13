@@ -43,6 +43,10 @@ const CartPopover = ({ onOpenDrawer }) => {
     return () => clearTimeout(timer);
   }, [totalQuantity]);
 
+  // Helper para formatear número con separador de miles
+  const formatPrice = (value) =>
+    value.toLocaleString("es-AR", { minimumFractionDigits: 0 });
+
   return (
     <Popover
       isOpen={isPopoverOpen}
@@ -75,54 +79,63 @@ const CartPopover = ({ onOpenDrawer }) => {
           )}
         </Box>
       </PopoverTrigger>
+
       <PopoverContent w="320px" zIndex="popover">
         <PopoverArrow />
         <PopoverCloseButton />
         <PopoverHeader fontWeight="bold">Resumen del carrito</PopoverHeader>
         <PopoverBody>
           {totalQuantity === 0 ? (
-            <Text>No hay items en el carrito.</Text>
+            <Text textAlign="center" color="gray.500">
+              No hay productos en el carrito.
+            </Text>
           ) : (
             <VStack align="stretch" spacing={3}>
-              {cart.slice(0, 3).map((item) => (
-                <Box key={item.id}>
-                  <HStack spacing={3}>
-                    <Image
-                      src={item.image || item.img} // soporta ambos nombres
-                      alt={item.name}
-                      boxSize="50px"
-                      objectFit="contain"
-                      borderRadius="md"
-                      bg="gray.50"
-                    />
-                    <Box flex="1">
-                      <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
-                        {item.name} x {item.quantity}
-                      </Text>
-                      <Text fontSize="sm" color="gray.500">
-                        Subtotal: ${item.quantity * item.price}
-                      </Text>
-                    </Box>
-                  </HStack>
-                  <Divider mt={2} />
-                </Box>
-              ))}
+              {cart.slice(0, 3).map((item) => {
+                const productImage =
+                  item.image || item.img || (item.images?.[0]) || "https://via.placeholder.com/50";
+
+                return (
+                  <Box key={item.id}>
+                    <HStack spacing={3} align="center">
+                      <Image
+                        src={productImage}
+                        alt={item.name}
+                        boxSize="50px"
+                        objectFit="contain"
+                        borderRadius="md"
+                        bg="gray.50"
+                      />
+                      <Box flex="1">
+                        <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                          {item.name} x {item.quantity}
+                        </Text>
+                        <Text fontSize="sm" color="gray.500">
+                          Subtotal: ${formatPrice(item.quantity * item.price)}
+                        </Text>
+                      </Box>
+                    </HStack>
+                    <Divider mt={2} />
+                  </Box>
+                );
+              })}
               {cart.length > 3 && (
                 <Text fontSize="sm" color="gray.500">
-                  + {cart.length - 3} items más
+                  + {cart.length - 3} productos más
                 </Text>
               )}
             </VStack>
           )}
         </PopoverBody>
+
         <PopoverFooter display="flex" justifyContent="space-between" alignItems="center">
-          <Text fontWeight="bold">Total: ${total}</Text>
+          <Text fontWeight="bold">Total: ${formatPrice(total)}</Text>
           <Button
             size="sm"
             colorScheme="teal"
             onClick={() => {
-              onClosePopover();    // cerrás el Popover
-              onOpenDrawer();      // abrís el Drawer
+              onClosePopover();
+              onOpenDrawer();
             }}
           >
             Ver carrito

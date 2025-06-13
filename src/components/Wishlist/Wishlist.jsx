@@ -29,53 +29,61 @@ const Wishlist = () => {
         </Text>
       ) : (
         <VStack spacing={4} align="stretch">
-          {wishlist.map((item) => (
-            <HStack
-              key={item.id}
-              p={3}
-              borderWidth="1px"
-              borderRadius="lg"
-              boxShadow="sm"
-              spacing={4}
-              alignItems="center"
-              _hover={{ boxShadow: "md" }}
-            >
-              <Image
-                src={item.image || item.img}
-                alt={item.name}
-                boxSize="64px"
-                objectFit="contain"
-                borderRadius="md"
-                bg="gray.50"
-              />
-              <Box flex="1">
-                <Text fontWeight="bold" noOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text color="teal.600" fontSize="sm">
-                  ${item.price}
-                </Text>
-              </Box>
-              <HStack spacing={2}>
-                <IconButton
-                  icon={<FaHeartBroken />}
-                  aria-label="Eliminar de favoritos"
-                  size="sm"
-                  colorScheme="red"
-                  onClick={() => removeFromWishlist(item.id)}
+          {wishlist.map((item) => {
+            const productImage =
+              item.image || item.img || (item.images?.[0]) || "https://via.placeholder.com/64";
+
+            return (
+              <HStack
+                key={item.id}
+                p={4}
+                borderWidth="1px"
+                borderRadius="lg"
+                boxShadow="sm"
+                spacing={4}
+                alignItems="center"
+                _hover={{ boxShadow: "md", transform: "translateY(-2px)" }}
+                transition="all 0.2s ease"
+              >
+                <Image
+                  src={productImage}
+                  alt={item.name}
+                  boxSize="64px"
+                  objectFit="contain"
+                  borderRadius="md"
+                  bg="gray.50"
                 />
-                <Button
-                  size="sm"
-                  as={RouterLink}
-                  to={`/item/${item.id}`}
-                  colorScheme="teal"
-                  variant="outline"
-                >
-                  Ver detalle
-                </Button>
+                <Box flex="1" minW="0">
+                  <Text fontWeight="bold" noOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text color="teal.600" fontSize="sm" mt={1}>
+                    ${item.price?.toLocaleString("es-AR")}
+                  </Text>
+                </Box>
+                <HStack spacing={2}>
+                  <IconButton
+                    icon={<FaHeartBroken />}
+                    aria-label="Eliminar de favoritos"
+                    size="sm"
+                    colorScheme="red"
+                    onClick={() => removeFromWishlist(item.id)}
+                    _hover={{ bg: "red.50" }}
+                  />
+                  <Button
+                    size="sm"
+                    as={RouterLink}
+                    to={`/item/${item.id}`}
+                    colorScheme="teal"
+                    variant="solid"
+                    _hover={{ transform: "translateY(-1px)" }}
+                  >
+                    Ver detalle
+                  </Button>
+                </HStack>
               </HStack>
-            </HStack>
-          ))}
+            );
+          })}
         </VStack>
       )}
     </Container>

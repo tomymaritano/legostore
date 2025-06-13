@@ -1,185 +1,193 @@
 import {
-    Drawer,
-    DrawerBody,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerCloseButton,
-    Button,
-    VStack,
-    Text,
-    Box,
-    useDisclosure,
-    IconButton,
-    Badge,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Progress,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  Button,
+  VStack,
+  HStack,
+  Image,
+  Box,
+  Text,
+  IconButton,
+  Progress,
+  useToast,
 } from "@chakra-ui/react";
-import { FaShoppingBag } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
-import CartItem from "../CartItem/CartItem";
-import { useNavigate } from "react-router-dom";
+import { FaTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
 
 const CartDrawer = ({ isOpen, onClose }) => {
-    const {
-        cart,
-        clearCart,
-        totalQuantity,
-        total,
-    } = useContext(CartContext);
+  const {
+    cart,
+    totalQuantity,
+    total,
+    increaseQuantity,
+    decreaseQuantity,
+    removeItem,
+    clearCart,
+  } = useContext(CartContext);
 
-    const {
-        isOpen: isModalOpen,
-        onOpen: onModalOpen,
-        onClose: onModalClose,
-    } = useDisclosure();
+  const toast = useToast();
 
-    const navigate = useNavigate();
+  const handleCheckout = () => {
+    toast({
+      title: "¡Gracias por tu compra!",
+      description: "Tu pedido ha sido procesado.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position: "bottom-right",
+    });
+    clearCart();
+    onClose();
+  };
 
-    const handleCheckout = () => {
-        onModalOpen();
-        onClose();
-        clearCart();
-    };
+  // Envío gratis
+  const FREE_SHIPPING_THRESHOLD = 1000;
+  const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
+  const progressToFreeShipping = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
 
-    const handleContinueShopping = () => {
-        onModalClose();
-        navigate("/");
-    };
+  return (
+    <Drawer placement="right" onClose={onClose} isOpen={isOpen} size="sm">
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader fontWeight="bold" borderBottom="1px solid #e2e8f0">
+          🛍️ Tu carrito ({totalQuantity} item{totalQuantity !== 1 ? "s" : ""})
+        </DrawerHeader>
 
-    // Animación bump para Badge
-    const [bumpClass, setBumpClass] = useState("");
+        <DrawerBody p={4}>
+          {cart.length === 0 ? (
+            <Text mt={6} textAlign="center" color="gray.500">
+              No hay productos en el carrito.
+            </Text>
+          ) : (
+            <>
+              {/* Envío gratis */}
+              <Box
+                w="100%"
+                bg="gray.100"
+                p={3}
+                borderRadius="md"
+                mb={4}
+                textAlign="center"
+                fontSize="sm"
+                fontWeight="medium"
+              >
+                {amountToFreeShipping === 0 ? (
+                  <Text color="green.600">🎉 ¡Tu pedido califica para envío gratis!</Text>
+                ) : (
+                  <>
+                    <Text mb={2}>
+                      🚚 Te faltan <strong>${amountToFreeShipping.toLocaleString("es-AR")}</strong> para obtener envío gratis.
+                    </Text>
+                    <Progress
+                      value={progressToFreeShipping}
+                      colorScheme="teal"
+                      size="sm"
+                      borderRadius="md"
+                      transition="all 0.5s ease-in-out"
+                    />
+                  </>
+                )}
+              </Box>
 
-    useEffect(() => {
-        if (totalQuantity === 0) return;
-        setBumpClass("cart-bump");
+              {/* Productos */}
+              <VStack spacing={4} align="stretch" maxH="calc(100vh - 300px)" overflowY="auto">
+                {cart.map((item) => {
+                  const productImage =
+                    item.image || item.img || (item.images?.[0]) || "https://via.placeholder.com/50";
 
-        const timer = setTimeout(() => {
-            setBumpClass("");
-        }, 300);
+                  return (
+                    <Box key={item.id} borderWidth="1px" borderRadius="md" p={3} boxShadow="sm">
+                      <HStack spacing={4} align="center">
+                        <Image
+                          src={productImage}
+                          alt={item.name}
+                          boxSize="60px"
+                          objectFit="contain"
+                          borderRadius="md"
+                          bg="gray.50"
+                        />
+                        <Box flex="1">
+                          <Text fontWeight="medium" noOfLines={1}>
+                            {item.name}
+                          </Text>
+                          <Text fontSize="sm" color="gray.500">
+                            Precio: ${item.price} | Subtotal: ${(item.price * item.quantity).toLocaleString("es-AR")}
+                          </Text>
+                          <HStack mt={2}>
+                            <IconButton
+                              icon={<FaMinus />}
+                              size="xs"
+                              variant="outline"
+                              aria-label="Disminuir cantidad"
+                              onClick={() => decreaseQuantity(item.id)}
+                              isDisabled={item.quantity === 1}
+                              _hover={{ bg: "gray.200" }}
+                            />
+                            <Text>{item.quantity}</Text>
+                            <IconButton
+                              icon={<FaPlus />}
+                              size="xs"
+                              variant="outline"
+                              aria-label="Aumentar cantidad"
+                              onClick={() => increaseQuantity(item.id)}
+                              _hover={{ bg: "gray.200" }}
+                            />
+                          </HStack>
+                        </Box>
+                        <IconButton
+                          icon={<FaTrashAlt />}
+                          size="sm"
+                          colorScheme="red"
+                          variant="ghost"
+                          aria-label="Eliminar producto"
+                          onClick={() => removeItem(item.id)}
+                          _hover={{ bg: "red.50" }}
+                        />
+                      </HStack>
+                    </Box>
+                  );
+                })}
+              </VStack>
+            </>
+          )}
+        </DrawerBody>
 
-        return () => clearTimeout(timer);
-    }, [totalQuantity]);
-
-    // Envío gratis
-    const FREE_SHIPPING_THRESHOLD = 1000;
-    const amountToFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - total, 0);
-    const progressToFreeShipping = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
-
-    return (
-        <>
-            {/* Drawer */}
-            <Drawer
-                placement="right"
-                onClose={onClose}
-                isOpen={isOpen}
-                size="sm"
-                motionPreset="slideInRight"
-            >
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader>Tu Carrito</DrawerHeader>
-                    <DrawerBody>
-                        {totalQuantity === 0 ? (
-                            <Text>No hay items en el carrito.</Text>
-                        ) : (
-                            <VStack spacing={4} align="stretch">
-                                {/* Faltan $X para envío gratis + progress */}
-                                <Box
-                                    w="100%"
-                                    bg="gray.100"
-                                    p={3}
-                                    borderRadius="md"
-                                    mb={4}
-                                    textAlign="center"
-                                    fontSize="sm"
-                                    fontWeight="medium"
-                                >
-                                    {amountToFreeShipping === 0 ? (
-                                        <Text color="green.600">🎉 ¡Tu pedido califica para envío gratis!</Text>
-                                    ) : (
-                                        <>
-                                            <Text mb={2}>
-                                                🚚 Te faltan <strong>${amountToFreeShipping}</strong> para obtener envío gratis.
-                                            </Text>
-                                            <Progress
-                                                value={progressToFreeShipping}
-                                                colorScheme="teal"
-                                                size="sm"
-                                                borderRadius="md"
-                                            />
-                                        </>
-                                    )}
-                                </Box>
-
-                                {/* Items */}
-                                {cart.map((p) => (
-                                    <CartItem key={p.id} {...p} />
-                                ))}
-
-                                {/* Total */}
-                                <Box textAlign="right" mt={4} w="100%">
-                                    <Text fontSize="xl" fontWeight="bold">
-                                        Total: ${total}
-                                    </Text>
-                                </Box>
-                            </VStack>
-                        )}
-                    </DrawerBody>
-
-                    <DrawerFooter display="flex" flexDirection="column" gap={2}>
-                        <Button
-                            colorScheme="red"
-                            variant="outline"
-                            w="100%"
-                            onClick={() => {
-                                clearCart();
-                                onClose();
-                            }}
-                            size="md"
-                            isDisabled={totalQuantity === 0}
-                        >
-                            Limpiar Carrito
-                        </Button>
-
-                        <Button
-                            colorScheme="teal"
-                            w="100%"
-                            size="md"
-                            onClick={handleCheckout}
-                            isDisabled={totalQuantity === 0}
-                        >
-                            Checkout
-                        </Button>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
-
-            {/* Modal de "Gracias por tu compra" */}
-            <Modal isOpen={isModalOpen} onClose={handleContinueShopping} size="md" isCentered>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>¡Gracias por tu compra!</ModalHeader>
-                    <ModalBody>
-                        <Text>Te enviaremos la confirmación por email.</Text>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button colorScheme="teal" onClick={handleContinueShopping}>
-                            Seguir comprando
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </>
-    );
+        <DrawerFooter flexDir="column" alignItems="stretch" borderTop="1px solid #e2e8f0">
+          <Box w="100%" mb={3}>
+            <Text fontSize="lg" fontWeight="bold">
+              Total: ${(total ?? 0).toLocaleString("es-AR")}
+            </Text>
+          </Box>
+          <Button
+            colorScheme="teal"
+            size="md"
+            w="100%"
+            mb={2}
+            onClick={handleCheckout}
+            isDisabled={cart.length === 0}
+          >
+            💳 Finalizar compra
+          </Button>
+          <Button
+            variant="outline"
+            size="md"
+            w="100%"
+            onClick={clearCart}
+            isDisabled={cart.length === 0}
+          >
+            🗑️ Vaciar carrito
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
 };
 
 export default CartDrawer;
