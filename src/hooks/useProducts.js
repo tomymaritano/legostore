@@ -1,46 +1,41 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../services/productService';
 
-export default function useProducts({
-  categoryId,
-  filters,
-  sortOption,
-  currentPage,
-  productsPerPage,
-}) {
-  const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const parseFilters = (params) => ({
+  type: params.getAll('type'),
+  age: params.getAll('age'),
+  theme: params.getAll('theme'),
+  interests: params.getAll('interests'),
+  pieces: params.getAll('pieces'),
+  highlight: params.getAll('highlight'),
+});
+
+export default function useProducts({ categoryId, sortOption = 'recommended', productsPerPage = 9 } = {}) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pageLoading, setPageLoading] = useState(false);
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const filters = useMemo(() => parseFilters(searchParams), [searchParams]);
+
+  const { data: allProducts = [], isLoading, error } = useQuery(['products'], async () => {
+    const { promise } = getProducts({ retries: 2 });
+    return promise;
+  }, { staleTime: 1000 * 60 * 5 });
 
   useEffect(() => {
-    const { promise, cancel } = getProducts({ retries: 2 });
-    setLoading(true);
-    promise
-      .then((data) => {
-        setAllProducts(data);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err);
-      })
-      .finally(() => setLoading(false));
-    return cancel;
-  }, []);
+    setPageLoading(true);
+    const timer = setTimeout(() => setPageLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, [currentPage, filters, sortOption]);
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter((prod) => {
-      if (categoryId && prod.category.toLowerCase() !== categoryId.toLowerCase()) {
-        return false;
-      }
+      if (categoryId && prod.category.toLowerCase() !== categoryId.toLowerCase()) return false;
       if (filters.type?.length && !filters.type.includes(prod.type)) return false;
       if (filters.age?.length && !filters.age.includes(prod.age)) return false;
       if (filters.theme?.length && !filters.theme.includes(prod.theme)) return false;
-      if (
-        filters.interests?.length &&
-        !filters.interests.some((interest) => prod.interests.includes(interest))
-      )
-        return false;
+      if (filters.interests?.length && !filters.interests.some((i) => prod.interests.includes(i))) return false;
       if (filters.pieces?.length && !filters.pieces.includes(prod.pieces)) return false;
       if (filters.highlight?.length && !filters.highlight.includes(prod.highlight)) return false;
       return true;
@@ -73,13 +68,31 @@ export default function useProducts({
     [sortedProducts, productsPerPage]
   );
 
+  const setPage = (page) => {
+    const params = new URLSearchParams(searchParams);
+    if (page <= 1) params.delete('page');
+    else params.set('page', String(page));
+    setSearchParams(params, { replace: true });
+  };
+
+  const setFilters = (newFilters) => {
+    const params = new URLSearchParams(searchParams);
+    ['type', 'age', 'theme', 'interests', 'pieces', 'highlight'].forEach((k) => params.delete(k));
+    Object.entries(newFilters).forEach(([k, vals]) => vals.forEach((v) => params.append(k, v)));
+    params.delete('page');
+    setSearchParams(params);
+  };
+
   return {
     products: allProducts,
     filteredProducts,
-    sortedProducts,
     paginatedProducts,
+    currentPage,
     totalPages,
-    loading,
+    loading: isLoading || pageLoading,
+    setPage,
+    filters,
+    setFilters,
     error,
   };
 }

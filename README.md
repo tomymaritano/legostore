@@ -32,6 +32,13 @@ src/
 
 Components consume hooks and should avoid data fetching or direct business logic. Hooks use services to interact with APIs or mocks.
 
+## Caching with React Query
+
+`useProducts` leverages **@tanstack/react-query** to cache product lists locally.
+Filters are synchronized with the URL search params and pagination is handled
+client-side. Changing the page triggers a small loading state while data is
+retrieved from the cache.
+
 ## Service pattern
 
 All API calls are made through `fetchWithRetry` exposed by `src/services/apiClient.js`.

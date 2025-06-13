@@ -60,6 +60,54 @@ export const getTotalProductsByFilterKey = (key, products, opts) =>
 export const getProductsByFiltersExceptKey = (filters, exceptKey, products, opts) =>
   wrapRequest(() => mockGetProductsByFiltersExceptKey(filters, exceptKey, products), opts);
 
+function applyFilters(list, { categoryId, filters = {} } = {}) {
+  return list.filter((prod) => {
+    if (categoryId && prod.category.toLowerCase() !== categoryId.toLowerCase()) return false;
+    if (filters.type?.length && !filters.type.includes(prod.type)) return false;
+    if (filters.age?.length && !filters.age.includes(prod.age)) return false;
+    if (filters.theme?.length && !filters.theme.includes(prod.theme)) return false;
+    if (filters.interests?.length && !filters.interests.some((i) => prod.interests.includes(i))) return false;
+    if (filters.pieces?.length && !filters.pieces.includes(prod.pieces)) return false;
+    if (filters.highlight?.length && !filters.highlight.includes(prod.highlight)) return false;
+    return true;
+  });
+}
+
+function applySort(list, sortOption) {
+  const sorted = [...list];
+  switch (sortOption) {
+    case 'price_low_high':
+      return sorted.sort((a, b) => a.price - b.price);
+    case 'price_high_low':
+      return sorted.sort((a, b) => b.price - a.price);
+    case 'name_asc':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name));
+    case 'name_desc':
+      return sorted.sort((a, b) => b.name.localeCompare(a.name));
+    default:
+      return sorted;
+  }
+}
+
+export const getProductsPage = (
+  page = 1,
+  limit = 9,
+  { categoryId, filters = {}, sortOption } = {},
+  opts,
+) =>
+  wrapRequest(async () => {
+    const all = await mockGetProducts();
+    const filtered = applyFilters(all, { categoryId, filters });
+    const sorted = applySort(filtered, sortOption);
+    const start = (page - 1) * limit;
+    const items = sorted.slice(start, start + limit);
+    return {
+      items,
+      totalFiltered: sorted.length,
+      total: all.length,
+    };
+  }, opts);
+
 export const productService = {
   getProducts,
   getProductById,
@@ -67,6 +115,7 @@ export const productService = {
   getProductsByFilters,
   getTotalProductsByFilterKey,
   getProductsByFiltersExceptKey,
+  getProductsPage,
   FILTER_CONFIG,
 };
 

@@ -22,57 +22,28 @@ import useProducts from "../../hooks/useProducts";
 import ProductList from "../ProductList/ProductList";
 import ProductFilters from "../ProductFilters/ProductFilters";
 import { motion } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const MotionBox = motion(Box);
 
 const ItemListContainer = ({ greeting }) => {
   const [sortOption, setSortOption] = useState("recommended");
-  const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
   const { categoryId } = useParams();
 
-  const [searchParams, setSearchParams] = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const parseFiltersFromParams = () => ({
-    type: searchParams.getAll("type"),
-    age: searchParams.getAll("age"),
-    theme: searchParams.getAll("theme"),
-    interests: searchParams.getAll("interests"),
-    pieces: searchParams.getAll("pieces"),
-    highlight: searchParams.getAll("highlight"),
-  });
-
-  const [filters, setFilters] = useState(parseFiltersFromParams);
-
-  useEffect(() => {
-    setFilters(parseFiltersFromParams());
-  }, [searchParams]);
-
-  useEffect(() => {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, values]) => {
-      values.forEach((val) => params.append(key, val));
-    });
-    setSearchParams(params, { replace: true });
-    setCurrentPage(1); // Reset page cuando cambian filtros
-  }, [filters, setSearchParams]);
 
   const {
     products,
     filteredProducts,
     paginatedProducts,
+    currentPage,
     totalPages,
     loading,
-  } = useProducts({
-    categoryId,
     filters,
-    sortOption,
-    currentPage,
-    productsPerPage,
-  });
+    setFilters,
+    setPage,
+  } = useProducts({ categoryId, sortOption, productsPerPage });
 
   // Scroll to top cuando cambio filtros o sort o page
   useEffect(() => {
@@ -206,7 +177,7 @@ const ItemListContainer = ({ greeting }) => {
                 <Flex justify="center" mt={8} gap={2}>
                   <Button
                     size="sm"
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    onClick={() => setPage(currentPage - 1)}
                     isDisabled={currentPage === 1}
                     aria-label="Página anterior"
                   >
@@ -217,18 +188,8 @@ const ItemListContainer = ({ greeting }) => {
                   </Text>
                   <Button
                     size="sm"
-                    onClick={() =>
-                      setCurrentPage((p) =>
-                        Math.min(
-                          p + 1,
-                          totalPages
-                        )
-                      )
-                    }
-                    isDisabled={
-                      currentPage ===
-                      totalPages
-                    }
+                    onClick={() => setPage(currentPage + 1)}
+                    isDisabled={currentPage === totalPages}
                     aria-label="Página siguiente"
                   >
                     Siguiente
