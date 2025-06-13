@@ -8,6 +8,8 @@ This app is a small e‑commerce demo built with React. It showcases a catalog o
    ```bash
    npm install
    ```
+   If you've installed before updating your local copy, run the command again to
+   ensure React Query is available.
 2. Start the development server:
    ```bash
    npm start

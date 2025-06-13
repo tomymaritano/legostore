@@ -18,7 +18,7 @@ import ProductFiltersHeader from "../ProductFIltersHeader/ProductFiltersHeader";
 import {
   getProductsByFilters,
   getTotalProductsByFilterKey,
-  getProductsByFiltersExceptKey, // <- IMPORTAR ESTO
+  getProductsByFiltersExceptKey,
 } from "../../services/productService";
 
 const FILTER_CONFIG = [
