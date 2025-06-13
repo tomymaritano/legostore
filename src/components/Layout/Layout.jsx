@@ -1,8 +1,8 @@
 // components/Layout/Layout.jsx
 import { Outlet, useLocation } from "react-router-dom";
-import ExtraNavbar from "../Navbars/ExtraNavbar";
-import NavBar from "../Navbars/Navbar";
-import Footer from "../Footer/footer";
+import ExtraNavbar from "./Navbar/ExtraNavbar";
+import NavBar from "./Navbar/Navbar";
+import Footer from "./Footer/Footer";
 import MainSlider from "../MainSlider/MainSlider";
 
 const Layout = () => {

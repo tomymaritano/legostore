@@ -72,4 +72,15 @@ export default {
     md: '0 4px 6px rgba(0, 0, 0, 0.1)',
     lg: '0 10px 15px rgba(0, 0, 0, 0.15)',
   },
+  components: {
+    IconButton: {
+      variants: {
+        nav: {
+          borderRadius: 'full',
+          transition: 'background-color 0.2s',
+          _hover: { bg: 'gray.100' },
+        },
+      },
+    },
+  },
 };

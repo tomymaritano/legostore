@@ -1,34 +1,36 @@
 import "keen-slider/keen-slider.min.css";
 import { useKeenSlider } from "keen-slider/react";
-import { Box, Button, Heading, Stack, Text, Flex, IconButton } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { Box, Flex, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import MainSliderSlide from "./MainSliderSlide";
 
-const MotionBox = motion(Box);
-
-const slides = [
+const defaultSlides = [
   {
     id: 1,
-    image: "url(https://wallpapers.com/images/hd/red-lego-patterned-background-cvg8flewpb1brraz.jpg)",
+    image:
+      "url(https://wallpapers.com/images/hd/red-lego-patterned-background-cvg8flewpb1brraz.jpg)",
     title: "Calling all dreamers",
     description:
       "Celebrate the launch of LEGO® DREAMZzz™ with our new competition.",
   },
   {
     id: 2,
-    image: "url(https://wallpapers.com/images/featured/4k-lego-xbysab6aqzfvuug5.jpg)",
+    image:
+      "url(https://wallpapers.com/images/featured/4k-lego-xbysab6aqzfvuug5.jpg)",
     title: "Skyline Collection",
     description: "Discover our stunning skyline sets for architecture lovers.",
   },
   {
     id: 3,
-    image: "url( https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webply&quality=80&width=1600&height=500&dpr=1)",
+    image:
+      "url( https://www.lego.com/cdn/cs/set/assets/blt4ca5ae84f874f9fc/01-Hero-Standard-TITAN.COMPAGE-Desktop.jpg?fit=crop&format=webply&quality=80&width=1600&height=500&dpr=1)",
     title: "Super Heroes Assemble",
     description: "Bring your favorite heroes to life with LEGO sets.",
   },
 ];
-const MainSlider = () => {
+
+const MainSlider = ({ slides = defaultSlides }) => {
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
     slides: { perView: 1 },
@@ -64,37 +66,11 @@ const MainSlider = () => {
       {/* KeenSlider wrapper */}
       <Box ref={sliderRef} className="keen-slider">
         {slides.map((slide, idx) => (
-          <Box
+          <MainSliderSlide
             key={slide.id}
+            slide={slide}
             className={`keen-slider__slide ${currentSlide === idx ? "active" : ""}`}
-            backgroundImage={slide.image}
-            backgroundSize="cover"
-            backgroundPosition="center"
-            h={{ base: "400px", md: "500px", lg: "600px" }}
-            display="flex"
-            alignItems="center"
-          >
-            <MotionBox
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              bg="rgba(0,0,0,0.4)"
-              backdropFilter="blur(4px)"
-              borderRadius="md"
-              p={{ base: 6, md: 10 }}
-              m={{ base: 4, md: 16 }}
-              maxW="lg"
-              color="white"
-            >
-              <Stack spacing={4}>
-                <Heading size="2xl">{slide.title}</Heading>
-                <Text fontSize="md">{slide.description}</Text>
-                <Button variant="outline" colorScheme="whiteAlpha">
-                  Shop now
-                </Button>
-              </Stack>
-            </MotionBox>
-          </Box>
+          />
         ))}
       </Box>
 

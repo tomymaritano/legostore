@@ -1,7 +1,5 @@
 import {
   Box,
-  IconButton,
-  Badge,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -18,9 +16,9 @@ import {
   HStack,
   Image,
 } from "@chakra-ui/react";
-import { FaShoppingBag } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
+import NavCartButton from "../../Layout/Navbar/NavCartButton";
 
 const CartPopover = ({ onOpenDrawer }) => {
   const { cart, totalQuantity, total } = useContext(CartContext);
@@ -56,28 +54,7 @@ const CartPopover = ({ onOpenDrawer }) => {
       placement="bottom-end"
     >
       <PopoverTrigger>
-        <Box position="relative" cursor="pointer">
-          <IconButton
-            icon={<FaShoppingBag />}
-            aria-label="Carrito"
-            variant="ghost"
-            size="md"
-          />
-          {totalQuantity > 0 && (
-            <Badge
-              colorScheme="green"
-              borderRadius="full"
-              position="absolute"
-              top="-1"
-              right="-1"
-              fontSize="0.7em"
-              px={1.5}
-              className={bumpClass}
-            >
-              {totalQuantity}
-            </Badge>
-          )}
-        </Box>
+        <NavCartButton total={totalQuantity} badgeClass={bumpClass} />
       </PopoverTrigger>
 
       <PopoverContent w="320px" zIndex="popover">
