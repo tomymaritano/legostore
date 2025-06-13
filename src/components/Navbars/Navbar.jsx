@@ -71,7 +71,11 @@ const NavBar = () => {
     const { promise, cancel } = getProducts({ retries: 2 });
     promise
       .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
+      });
     return cancel;
   }, []);
 

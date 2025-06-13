@@ -21,8 +21,9 @@ export default function useProducts({
         setError(null);
       })
       .catch((err) => {
-        console.error(err);
-        setError(err);
+        if (err.name !== 'AbortError') {
+          console.error(err);
+        }
       })
       .finally(() => setLoading(false));
     return cancel;
