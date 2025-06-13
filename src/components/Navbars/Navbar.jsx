@@ -11,12 +11,6 @@ import {
   DrawerCloseButton,
   useDisclosure,
   VStack,
-  Badge,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button,
   Divider,
   Input,
   InputGroup,
@@ -28,17 +22,16 @@ import {
   PopoverCloseButton,
   PopoverBody,
   Text,
+  Button,
+  Badge,
 } from "@chakra-ui/react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaHeart, FaShoppingCart } from "react-icons/fa";
+import { SearchIcon } from "@chakra-ui/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
-import { SearchIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
-import "./CartBump.css";
 import CartDrawer from "../Cart/CartDrawer";
-import CartPopover from "../CartPopover/CartPopover";
-import WishlistPopover from "../WishlistPopover/WishlistPopover";
 import { getProducts } from "../Service/asyncMock";
 import { useDebounce } from "../../hooks/useDebounce";
 
@@ -89,7 +82,6 @@ const NavBar = () => {
     }
   };
 
-  // Manejo para evitar que el Popover se cierre al hacer click en un producto
   const handleResultClick = () => {
     setTimeout(() => {
       setSearchQuery("");
@@ -103,143 +95,208 @@ const NavBar = () => {
       position="sticky"
       top="0"
       zIndex="999"
-      bg="rgb(255, 207, 1)"
+      bg="brand.300"
       color="black"
       py={3}
-      px={4}
+      px={6}
       justifyContent="space-between"
       alignItems="center"
-      fontSize="sm"
-      boxShadow="md"
+      boxShadow="sm"
     >
       {/* Logo */}
       <Link as={NavLink} to="/" px={2}>
-        <Image src={logo} h={10} />
+        <Image src={logo} h="40px" />
       </Link>
 
       {/* Menu Links Desktop */}
       <Flex
         display={{ base: "none", md: "flex" }}
         alignItems="center"
-        gap={6}
+        gap={8}
         flex={1}
         justifyContent="center"
       >
-        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/helmet">
-          Helmet
-        </Link>
-        <Link textTransform="uppercase" fontWeight="bold" as={NavLink} to="/category/brickheadz">
-          Brickheadz
-        </Link>
-        <Menu>
-          <MenuButton as={Button} rightIcon={<ChevronDownIcon />} variant="ghost" fontWeight="bold" textTransform="uppercase">
-            Cars
-          </MenuButton>
-          <MenuList>
-            <MenuItem as={NavLink} to="/category/cars/sport" onClick={onMenuClose}>
-              Sport Cars
-            </MenuItem>
-            <MenuItem as={NavLink} to="/category/cars/classic" onClick={onMenuClose}>
-              Classic Cars
-            </MenuItem>
-            <MenuItem as={NavLink} to="/category/cars/suv" onClick={onMenuClose}>
-              SUV
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        {[
+          { label: "Helmet", path: "/category/helmet" },
+          { label: "Brickheadz", path: "/category/brickheadz" },
+          { label: "Cars", path: "/category/cars/sport" },
+        ].map((item) => (
+          <Link
+            key={item.label}
+            as={NavLink}
+            to={item.path}
+            position="relative"
+            fontWeight="semibold"
+            fontSize="sm"
+            textTransform="uppercase"
+            _after={{
+              content: "''",
+              position: "absolute",
+              bottom: "-2px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "0",
+              height: "2px",
+              bg: "black",
+              transition: "width 0.3s ease",
+            }}
+            _hover={{
+              _after: {
+                width: "100%",
+              },
+            }}
+          >
+            {item.label}
+          </Link>
+        ))}
       </Flex>
 
       {/* Icons + Search */}
-      <Flex display={{ base: "none", md: "flex" }} alignItems="center" gap={4}>
-        {/* Search con Popover controlado */}
-        <Popover
-          isOpen={isSearchOpen && searchQuery.length >= 2}
-          placement="bottom-start"
-        >
-          <PopoverTrigger>
-            <Box>
-              <form onSubmit={handleSearchSubmit}>
-                <InputGroup size="sm" w="200px">
-                  <InputLeftElement pointerEvents="none">
-                    <SearchIcon color="gray.500" />
-                  </InputLeftElement>
-                  <Input
-                    type="text"
-                    placeholder="Buscar (min 2 letras)..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={onSearchOpen}
-                    onBlur={() => {
-                      setTimeout(() => {
-                        if (searchQuery.trim() === "") {
-                          onSearchClose();
-                        }
-                      }, 200);
-                    }}
-                  />
-                </InputGroup>
-              </form>
-            </Box>
-          </PopoverTrigger>
-          <PopoverContent w="250px" maxH="300px" overflowY="auto" zIndex="popover">
-            <PopoverArrow />
-            <PopoverCloseButton onClick={() => setSearchQuery("")} />
-            <PopoverBody>
-              {filteredProducts.length === 0 ? (
-                <Text textAlign="center" py={2} color="gray.500">
-                  No se encontraron productos.
-                </Text>
-              ) : (
-                filteredProducts.slice(0, 5).map((prod) => (
-                  <Box
-                    key={prod.id}
-                    as={NavLink}
-                    to={`/item/${prod.id}`}
-                    display="flex"
-                    alignItems="center"
-                    gap={3}
-                    py={2}
-                    px={2}
-                    borderRadius="md"
-                    _hover={{ bg: "gray.100" }}
-                    onClick={handleResultClick}
-                  >
-                    <Image
-                      src={prod.img}
-                      boxSize="40px"
-                      objectFit="contain"
-                      borderRadius="md"
-                      bg="white"
+      <Flex display="flex" alignItems="center" gap={4}>
+        {/* Search */}
+        <Box position="relative">
+          <Popover
+            isOpen={isSearchOpen && searchQuery.length >= 2}
+            placement="bottom-start"
+          >
+            <PopoverTrigger>
+              <Box>
+                <form onSubmit={handleSearchSubmit}>
+                  <InputGroup size="sm" w="200px">
+                    <InputLeftElement pointerEvents="none">
+                      <SearchIcon color="gray.500" />
+                    </InputLeftElement>
+                    <Input
+                      type="text"
+                      placeholder="Buscar..."
+                      borderRadius="full"
+                      bg="gray.100"
+                      _hover={{ bg: "gray.200" }}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={onSearchOpen}
+                      onBlur={() => {
+                        setTimeout(() => {
+                          if (searchQuery.trim() === "") {
+                            onSearchClose();
+                          }
+                        }, 200);
+                      }}
                     />
-                    <Box>
-                      <Text fontWeight="medium" noOfLines={1}>
-                        {prod.name}
-                      </Text>
-                      <Text fontSize="sm" color="gray.500">
-                        ${prod.price}
-                      </Text>
+                  </InputGroup>
+                </form>
+              </Box>
+            </PopoverTrigger>
+            <PopoverContent w="250px" maxH="300px" overflowY="auto" zIndex="popover">
+              <PopoverArrow />
+              <PopoverCloseButton onClick={() => setSearchQuery("")} />
+              <PopoverBody>
+                {filteredProducts.length === 0 ? (
+                  <Text textAlign="center" py={2} color="gray.500">
+                    No se encontraron productos.
+                  </Text>
+                ) : (
+                  filteredProducts.slice(0, 5).map((prod) => (
+                    <Box
+                      key={prod.id}
+                      as={NavLink}
+                      to={`/item/${prod.id}`}
+                      display="flex"
+                      alignItems="center"
+                      gap={3}
+                      py={2}
+                      px={2}
+                      borderRadius="md"
+                      _hover={{ bg: "gray.100" }}
+                      onClick={handleResultClick}
+                    >
+                      <Image
+                        src={prod.img}
+                        boxSize="40px"
+                        objectFit="contain"
+                        borderRadius="md"
+                        bg="white"
+                      />
+                      <Box>
+                        <Text fontWeight="medium" noOfLines={1}>
+                          {prod.name}
+                        </Text>
+                        <Text fontSize="sm" color="gray.500">
+                          ${prod.price}
+                        </Text>
+                      </Box>
                     </Box>
-                  </Box>
-                ))
-              )}
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
+                  ))
+                )}
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </Box>
 
-        {/* WishlistPopover */}
-        <WishlistPopover />
+        {/* Wishlist */}
+        <Box position="relative">
+          <IconButton
+            icon={<FaHeart />}
+            variant="ghost"
+            size="md"
+            as={NavLink}
+            to="/wishlist"
+            borderRadius="full"
+            _hover={{ bg: "gray.100" }}
+          />
+          {totalWishlistQuantity > 0 && (
+            <Badge
+              position="absolute"
+              top="0"
+              right="0"
+              bg="pink.500"
+              color="white"
+              borderRadius="full"
+              fontSize="10px"
+              px={1}
+            >
+              {totalWishlistQuantity}
+            </Badge>
+          )}
+        </Box>
 
-        {/* CartPopover */}
-        <CartPopover onOpenDrawer={onCartOpen} />
+        {/* Cart */}
+        <Box position="relative">
+          <IconButton
+            icon={<FaShoppingCart />}
+            variant="ghost"
+            size="md"
+            onClick={onCartOpen}
+            borderRadius="full"
+            _hover={{ bg: "gray.100" }}
+          />
+          {totalQuantity > 0 && (
+            <Badge
+              position="absolute"
+              top="0"
+              right="0"
+              bg="teal.500"
+              color="white"
+              borderRadius="full"
+              fontSize="10px"
+              px={1}
+            >
+              {totalQuantity}
+            </Badge>
+          )}
+        </Box>
 
-        {/* CartDrawer */}
-        <CartDrawer isOpen={isCartOpen} onClose={onCartClose} />
+        {/* Mobile Menu */}
+        <Box display={{ base: "block", md: "none" }}>
+          <IconButton
+            icon={<FaBars />}
+            aria-label="Open Menu"
+            variant="ghost"
+            size="md"
+            onClick={onMenuOpen}
+          />
+        </Box>
       </Flex>
-
-      {/* Mobile Menu Icon */}
-      <Box display={{ base: "block", md: "none" }}>
-        <IconButton icon={<FaBars />} aria-label="Open Menu" variant="ghost" size="md" onClick={onMenuOpen} />
-      </Box>
 
       {/* Mobile Drawer */}
       <Drawer placement="left" onClose={onMenuClose} isOpen={isMenuOpen}>
@@ -247,46 +304,28 @@ const NavBar = () => {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerBody mt={10}>
-            <VStack spacing={4} align="start">
-              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/category/helmet" onClick={onMenuClose}>
-                Helmet
-              </Button>
-              <Button variant="ghost" fontWeight="bold" as={NavLink} to="/category/brickheadz" onClick={onMenuClose}>
-                Brickheadz
-              </Button>
-              <Box w="100%">
-                <Box fontWeight="bold" mb={1}>
-                  Cars
-                </Box>
-                <VStack align="start" pl={4}>
-                  <Button variant="ghost" as={NavLink} to="/category/cars/sport" onClick={onMenuClose}>
-                    Sport Cars
-                  </Button>
-                  <Button variant="ghost" as={NavLink} to="/category/cars/classic" onClick={onMenuClose}>
-                    Classic Cars
-                  </Button>
-                  <Button variant="ghost" as={NavLink} to="/category/cars/suv" onClick={onMenuClose}>
-                    SUV
-                  </Button>
-                </VStack>
-              </Box>
-
-              <Divider my={2} />
-
-              {/* Wishlist en mobile */}
-              <Button
-                variant="ghost"
-                fontWeight="bold"
-                as={NavLink}
-                to="/wishlist"
-                onClick={onMenuClose}
-              >
-                Favoritos {totalWishlistQuantity > 0 && `(${totalWishlistQuantity})`}
-              </Button>
-
-              <Divider my={2} />
-
-              {/* Mobile Drawer → CartDrawer */}
+            <VStack spacing={6} align="start">
+              {[
+                { label: "Helmet", path: "/category/helmet" },
+                { label: "Brickheadz", path: "/category/brickheadz" },
+                { label: "Cars", path: "/category/cars/sport" },
+                { label: "Favoritos", path: "/wishlist" },
+              ].map((item) => (
+                <Button
+                  key={item.label}
+                  as={NavLink}
+                  to={item.path}
+                  onClick={onMenuClose}
+                  variant="ghost"
+                  fontWeight="bold"
+                  fontSize="lg"
+                  w="100%"
+                  justifyContent="flex-start"
+                >
+                  {item.label}
+                </Button>
+              ))}
+              <Divider />
               <Button
                 variant="solid"
                 colorScheme="teal"
