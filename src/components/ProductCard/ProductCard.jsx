@@ -4,7 +4,6 @@ import {
   Text,
   Stack,
   Heading,
-  Badge,
   Button,
   useToast,
   IconButton,
@@ -15,6 +14,8 @@ import { useContext, useState } from "react";
 import { CartContext } from "../CartContext/CartContext";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import ProductCardBadge from "../ProductCardBadge/ProductCardBadge";
+import ProductCardPrice from "../ProductCardPrice/ProductCardPrice";
 
 const MotionBox = motion(Box);
 
@@ -115,11 +116,10 @@ const ProductCard = ({
     >
       {/* Imagen + Wishlist */}
       <Box position="relative" w="100%" h="320px">
-        {/* Imagen como Link → abre modal */}
         <Box
           as={RouterLink}
           to={`/item/${id}`}
-          state={{ backgroundLocation: location }} // modal sólo en imagen
+          state={{ backgroundLocation: location }}
         >
           <Image
             src={activeImage}
@@ -145,41 +145,8 @@ const ProductCard = ({
           />
         </Box>
 
-        {/* Badges */}
-        {isNew && (
-          <Badge
-            position="absolute"
-            top={2}
-            left={2}
-            colorScheme="teal"
-            borderRadius="full"
-            px={2}
-            py={1}
-            fontSize="xs"
-            textTransform="uppercase"
-            zIndex="overlay"
-          >
-            New
-          </Badge>
-        )}
-        {isOnSale && (
-          <Badge
-            position="absolute"
-            top={2}
-            left={isNew ? "60px" : "2px"}
-            colorScheme="orange"
-            borderRadius="full"
-            px={2}
-            py={1}
-            fontSize="xs"
-            textTransform="uppercase"
-            zIndex="overlay"
-          >
-            Sale
-          </Badge>
-        )}
+        <ProductCardBadge isNew={isNew} isOnSale={isOnSale} />
 
-        {/* Wishlist Icon */}
         <IconButton
           icon={isInWishlist ? <FaHeart /> : <FaRegHeart />}
           colorScheme={isInWishlist ? "pink" : "gray"}
@@ -227,26 +194,11 @@ const ProductCard = ({
           {name}
         </Heading>
 
-        {/* Precio */}
-        <Flex align="center" gap={2} flexWrap="wrap">
-          {isOnSale && originalPrice && (
-            <Text
-              fontSize="md"
-              color="gray.500"
-              as="s"
-              fontWeight="medium"
-            >
-              ${originalPrice}
-            </Text>
-          )}
-          <Text
-            fontSize="lg"
-            fontWeight="bold"
-            color={isOnSale ? "orange.500" : "teal.600"}
-          >
-            ${price}
-          </Text>
-        </Flex>
+        <ProductCardPrice
+          price={price}
+          originalPrice={originalPrice}
+          isOnSale={isOnSale}
+        />
 
         <Text fontSize="sm" color="gray.600" noOfLines={2}>
           {description}
@@ -260,7 +212,7 @@ const ProductCard = ({
       {/* Botones */}
       <Stack p={4} spacing={2}>
         <Button
-          colorScheme="teal"
+          colorScheme="blue"
           size="md"
           w="100%"
           onClick={handleAddToCart}
@@ -269,7 +221,6 @@ const ProductCard = ({
           Agregar al carrito
         </Button>
 
-        {/* Botón "Ver detalle" → SIN state → abre página completa */}
         <Button
           as={RouterLink}
           to={`/item/${id}`}
