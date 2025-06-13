@@ -18,7 +18,7 @@ import ProductFiltersHeader from "../ProductFIltersHeader/ProductFiltersHeader";
 import {
   getProductsByFilters,
   getTotalProductsByFilterKey,
-  getProductsByFiltersExceptKey, // <- IMPORTAR ESTO
+  getProductsByFiltersExceptKey,
 } from "../../services/productService";
 
 const FILTER_CONFIG = [
@@ -47,7 +47,7 @@ const FILTER_CONFIG = [
   { label: "Destacados", key: "highlight", options: ["Exclusivos", "Destacados", "Edición Limitada"] },
 ];
 
-const ProductFilters = ({ filters, setFilters, filteredProducts, products }) => {
+const ProductFilters = ({ filters, setFilters, products }) => {
   const collapses = FILTER_CONFIG.map(() => useDisclosure({ defaultIsOpen: true }));
 
   const [showMoreMap, setShowMoreMap] = useState({});

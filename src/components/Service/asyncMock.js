@@ -323,6 +323,73 @@ export const getProductsByFilters = (filters) => {
   });
 };
 
+export const getProductsPaginated = ({
+  page = 1,
+  limit = 9,
+  categoryId,
+  filters = {},
+  sortOption,
+}) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let result = [...products];
+
+      if (categoryId) {
+        result = result.filter(
+          (p) => p.category.toLowerCase() === categoryId.toLowerCase()
+        );
+      }
+
+      const matches = (prod, key, values) => {
+        if (!values?.length) return true;
+        switch (key) {
+          case "type":
+            return values.includes(prod.type);
+          case "age":
+            return values.includes(prod.age);
+          case "theme":
+            return values.includes(prod.theme);
+          case "interests":
+            return values.some((i) => prod.interests.includes(i));
+          case "pieces":
+            return values.includes(prod.pieces);
+          case "highlight":
+            return values.includes(prod.highlight);
+          default:
+            return true;
+        }
+      };
+
+      result = result.filter((prod) =>
+        Object.entries(filters).every(([k, v]) => matches(prod, k, v))
+      );
+
+      switch (sortOption) {
+        case "price_low_high":
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case "price_high_low":
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case "name_asc":
+          result.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "name_desc":
+          result.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        default:
+          break;
+      }
+
+      const total = result.length;
+      const start = (page - 1) * limit;
+      const paginated = result.slice(start, start + limit);
+
+      resolve({ products: paginated, total });
+    }, 500);
+  });
+};
+
 export const getTotalProductsByFilterKey = (key, productsArray) => {
   return new Promise((resolve) => {
     setTimeout(() => {
