@@ -36,9 +36,9 @@ export default function useProducts({ categoryId, sortOption, productsPerPage = 
     setPage(1);
   }, [filters]);
 
-  const { data, isLoading, isFetching } = useQuery(
-    ['products', categoryId, filters, sortOption, page],
-    () =>
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['products', categoryId, filters, sortOption, page],
+    queryFn: () =>
       getProductsPaginated({
         page,
         limit: productsPerPage,
@@ -46,11 +46,8 @@ export default function useProducts({ categoryId, sortOption, productsPerPage = 
         filters,
         sortOption,
       }).promise,
-    {
-      keepPreviousData: true,
-    }
-  );
-
+    keepPreviousData: true,
+  });
   const products = data?.products || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / productsPerPage);
