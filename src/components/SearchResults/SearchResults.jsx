@@ -23,20 +23,18 @@ const SearchResults = () => {
   const searchQuery = queryParams.get("q") || "";
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      const data = await getProducts();
-
-      // filtrado básico → puede mejorarse con slug, keywords, etc.
-      const filtered = data.filter((prod) =>
-        prod.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-      setProducts(filtered);
-      setLoading(false);
-    };
-
-    fetchProducts();
+    const { promise, cancel } = getProducts({ retries: 2 });
+    setLoading(true);
+    promise
+      .then((data) => {
+        const filtered = data.filter((prod) =>
+          prod.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setProducts(filtered);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+    return cancel;
   }, [searchQuery]);
 
   return (

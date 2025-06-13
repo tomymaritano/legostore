@@ -68,11 +68,11 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const data = await getProducts();
-      setProducts(data);
-    };
-    fetchProducts();
+    const { promise, cancel } = getProducts({ retries: 2 });
+    promise
+      .then((data) => setProducts(data))
+      .catch((err) => console.error(err));
+    return cancel;
   }, []);
 
   const filteredProducts = products.filter((prod) =>

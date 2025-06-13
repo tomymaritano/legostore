@@ -151,9 +151,18 @@ const ProductFilters = ({ filters, setFilters, filteredProducts, products }) => 
       const newCounts = {};
       for (const filter of FILTER_CONFIG) {
         // 👇 aplicar "todos los filtros excepto este"
-        const productsForCount = getProductsByFiltersExceptKey(filters, filter.key, products);
+        const {
+          promise: subListPromise,
+          cancel: cancelSubList,
+        } = getProductsByFiltersExceptKey(filters, filter.key, products);
 
-        const counts = await getTotalProductsByFilterKey(filter.key, productsForCount);
+        const { promise: countsPromise, cancel: cancelCounts } =
+          getTotalProductsByFilterKey(filter.key, await subListPromise);
+
+        const counts = await countsPromise;
+
+        cancelCounts();
+        cancelSubList();
 
         newCounts[filter.key] = counts;
       }

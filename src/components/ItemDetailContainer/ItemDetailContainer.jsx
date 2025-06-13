@@ -20,14 +20,13 @@ const ItemDetailContainer = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProduct = async () => {
-            setLoading(true);
-            const data = await getProductById(productId);
-            setProduct(data);
-            setLoading(false);
-        };
-
-        fetchProduct();
+        const { promise, cancel } = getProductById(productId, { retries: 2 });
+        setLoading(true);
+        promise
+            .then((data) => setProduct(data))
+            .catch((err) => console.error(err))
+            .finally(() => setLoading(false));
+        return cancel;
     }, [productId]);
 
     return (

@@ -24,26 +24,27 @@ const ItemDetailPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      const data = await getProductById(productId);
-      if (data) {
-        setProduct(data);
-      } else {
-        toast({
-          title: "Producto no encontrado.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        navigate("/", { replace: true });
-      }
-    };
-
-    fetchProduct();
+    const { promise, cancel } = getProductById(productId, { retries: 2 });
+    promise
+      .then((data) => {
+        if (data) {
+          setProduct(data);
+        } else {
+          toast({
+            title: "Producto no encontrado.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          navigate("/", { replace: true });
+        }
+      })
+      .catch((err) => console.error(err));
 
     // disable scroll cuando abre modal
     document.body.style.overflow = "hidden";
     return () => {
+      cancel();
       document.body.style.overflow = "auto";
     };
   }, [productId, navigate, toast]);

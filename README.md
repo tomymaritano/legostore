@@ -31,3 +31,26 @@ src/
 ```
 
 Components consume hooks and should avoid data fetching or direct business logic. Hooks use services to interact with APIs or mocks.
+
+## Service pattern
+
+All API calls are made through `fetchWithRetry` exposed by `src/services/apiClient.js`.
+This helper provides:
+
+1. **Error handling** – non‑OK responses throw an error with the HTTP status.
+2. **Retry support** – automatic retries with exponential backoff can be configured per request.
+3. **Cancellation** – each call returns a `cancel` function using `AbortController` to abort the underlying `fetch`.
+
+Services such as `productService` wrap these helpers and expose domain specific functions:
+
+```javascript
+import { getProducts } from './services/productService';
+
+const { promise, cancel } = getProducts({ retries: 2 });
+promise.then(setProducts).catch(console.error);
+
+// optional cleanup
+cancel();
+```
+
+Components never call `fetch` directly; they consume hooks which use these services internally.

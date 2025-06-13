@@ -10,15 +10,22 @@ export default function useProducts({
 }) {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const data = await getProducts();
-      setAllProducts(data);
-      setLoading(false);
-    };
-    fetchData();
+    const { promise, cancel } = getProducts({ retries: 2 });
+    setLoading(true);
+    promise
+      .then((data) => {
+        setAllProducts(data);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err);
+      })
+      .finally(() => setLoading(false));
+    return cancel;
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -73,5 +80,6 @@ export default function useProducts({
     paginatedProducts,
     totalPages,
     loading,
+    error,
   };
 }
