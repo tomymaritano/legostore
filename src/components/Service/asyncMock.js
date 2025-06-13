@@ -281,3 +281,91 @@ export const getProductsByCategory = (category) => {
     }, 500);
   });
 };
+
+export const getProductsByFilters = (filters) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const filteredProducts = products.filter((product) => {
+        const matchesType =
+          !filters.type?.length || filters.type.includes(product.type);
+
+        const matchesAge =
+          !filters.age?.length || filters.age.includes(product.age);
+
+        const matchesTheme =
+          !filters.theme?.length || filters.theme.includes(product.theme);
+
+        const matchesInterests =
+          !filters.interests?.length ||
+          filters.interests.some((interest) =>
+            product.interests.includes(interest)
+          );
+
+        const matchesPieces =
+          !filters.pieces?.length || filters.pieces.includes(product.pieces);
+
+        const matchesHighlight =
+          !filters.highlight?.length ||
+          filters.highlight.includes(product.highlight);
+
+        return (
+          matchesType &&
+          matchesAge &&
+          matchesTheme &&
+          matchesInterests &&
+          matchesPieces &&
+          matchesHighlight
+        );
+      });
+
+      resolve(filteredProducts);
+    }, 500);
+  });
+};
+
+export const getTotalProductsByFilterKey = (key, productsArray) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const counts = {};
+
+      productsArray.forEach((product) => {
+        const value = product[key];
+
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            counts[item] = (counts[item] || 0) + 1;
+          });
+        } else {
+          counts[value] = (counts[value] || 0) + 1;
+        }
+      });
+
+      resolve(counts);
+    }, 300);
+  });
+};
+
+export const getProductsByFiltersExceptKey = (filters, exceptKey, allProducts) => {
+    return allProducts.filter((prod) => {
+        return Object.entries(filters).every(([key, values]) => {
+            if (key === exceptKey || values.length === 0) return true;
+
+            switch (key) {
+                case "type":
+                    return values.includes(prod.type);
+                case "age":
+                    return values.includes(prod.age);
+                case "theme":
+                    return values.includes(prod.theme);
+                case "interests":
+                    return values.some((interest) => prod.interests.includes(interest));
+                case "pieces":
+                    return values.includes(prod.pieces);
+                case "highlight":
+                    return values.includes(prod.highlight);
+                default:
+                    return true;
+            }
+        });
+    });
+};

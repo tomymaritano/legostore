@@ -25,7 +25,6 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
-
 const MotionBox = motion(Box);
 
 const ItemListContainer = ({ greeting }) => {
@@ -34,7 +33,7 @@ const ItemListContainer = ({ greeting }) => {
   const [sortOption, setSortOption] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
-    const { categoryId } = useParams();
+  const { categoryId } = useParams();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -75,14 +74,29 @@ const ItemListContainer = ({ greeting }) => {
   }, []);
 
   const filteredProducts = products.filter((prod) => {
-      if (categoryId && prod.category !== categoryId) return false; // 🔥 importante
+    // CORREGIDO: categoryId case-insensitive
+    if (
+      categoryId &&
+      prod.category.toLowerCase() !== categoryId.toLowerCase()
+    )
+      return false;
 
     if (filters.type.length > 0 && !filters.type.includes(prod.type)) return false;
     if (filters.age.length > 0 && !filters.age.includes(prod.age)) return false;
     if (filters.theme.length > 0 && !filters.theme.includes(prod.theme)) return false;
-    if (filters.interests.length > 0 && !filters.interests.includes(prod.interests)) return false;
+
+    // CORREGIDO: interests (prod.interests es array)
+    if (
+      filters.interests.length > 0 &&
+      !filters.interests.some((interest) =>
+        prod.interests.includes(interest)
+      )
+    )
+      return false;
+
     if (filters.pieces.length > 0 && !filters.pieces.includes(prod.pieces)) return false;
     if (filters.highlight.length > 0 && !filters.highlight.includes(prod.highlight)) return false;
+
     return true;
   });
 
@@ -134,16 +148,15 @@ const ItemListContainer = ({ greeting }) => {
       {loading ? (
         <Flex gap={6} wrap="wrap" justify="center">
           {Array.from({ length: 9 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              height="450px"
-              width="300px"
-              borderRadius="lg"
-            />
+            <Skeleton key={i} height="450px" width="300px" borderRadius="lg" />
           ))}
         </Flex>
       ) : (
-        <Flex align="start" gap={6} flexDirection={{ base: "column", md: "row" }}>
+        <Flex
+          align="start"
+          gap={6}
+          flexDirection={{ base: "column", md: "row" }}
+        >
           {/* Sidebar filtros desktop */}
           <Box
             w={{ base: "100%", md: "220px" }}
@@ -152,19 +165,33 @@ const ItemListContainer = ({ greeting }) => {
             top="100px"
             flexShrink={0}
           >
-            <ProductFilters filters={filters} setFilters={setFilters} />
+            <ProductFilters
+              filters={filters}
+              setFilters={setFilters}
+              filteredProducts={filteredProducts}
+              products={products} // ✅ agregar esta prop aquí también (muy importante!)
+            />
           </Box>
 
           {/* Productos */}
           <Box flex="1">
-            <Flex justify="space-between" align="center" mb={4} flexWrap="wrap" gap={2}>
+            <Flex
+              justify="space-between"
+              align="center"
+              mb={4}
+              flexWrap="wrap"
+              gap={2}
+            >
               <Flex flexDir="column">
                 <Text fontSize="lg" fontWeight="bold">
-                  Mostrando {filteredProducts.length} productos de {products.length}
+                  Mostrando {filteredProducts.length} productos de{" "}
+                  {products.length}
                 </Text>
                 {totalFiltersApplied > 0 && (
                   <Text fontSize="sm" color="teal.600">
-                    {totalFiltersApplied} filtro{totalFiltersApplied > 1 ? "s" : ""} aplicado{totalFiltersApplied > 1 ? "s" : ""}
+                    {totalFiltersApplied} filtro
+                    {totalFiltersApplied > 1 ? "s" : ""} aplicado
+                    {totalFiltersApplied > 1 ? "s" : ""}
                   </Text>
                 )}
               </Flex>
@@ -232,16 +259,23 @@ const ItemListContainer = ({ greeting }) => {
                     Anterior
                   </Button>
                   <Text fontSize="sm" fontWeight="medium">
-                    Página {currentPage} / {Math.ceil(sortedProducts.length / productsPerPage)}
+                    Página {currentPage} /{" "}
+                    {Math.ceil(sortedProducts.length / productsPerPage)}
                   </Text>
                   <Button
                     size="sm"
                     onClick={() =>
                       setCurrentPage((p) =>
-                        Math.min(p + 1, Math.ceil(sortedProducts.length / productsPerPage))
+                        Math.min(
+                          p + 1,
+                          Math.ceil(sortedProducts.length / productsPerPage)
+                        )
                       )
                     }
-                    isDisabled={currentPage === Math.ceil(sortedProducts.length / productsPerPage)}
+                    isDisabled={
+                      currentPage ===
+                      Math.ceil(sortedProducts.length / productsPerPage)
+                    }
                     aria-label="Página siguiente"
                   >
                     Siguiente
@@ -259,7 +293,12 @@ const ItemListContainer = ({ greeting }) => {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerBody mt={10} px={4}>
-            <ProductFilters filters={filters} setFilters={setFilters} />
+            <ProductFilters
+              filters={filters}
+              setFilters={setFilters}
+              filteredProducts={filteredProducts}
+              products={products} // ✅ agregar esta prop
+            />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

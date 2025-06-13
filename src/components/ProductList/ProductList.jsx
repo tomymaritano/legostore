@@ -11,8 +11,8 @@ const ProductList = ({ products }) => {
       ) : (
         <SimpleGrid
           columns={{ base: 1, sm: 2, md: 3, xl: 4 }} // 👈 columnas adaptables PRO
-          spacing={{ base: 6, md: 8 }}
-          minChildWidth="240px" // opcional, ayuda a mantener buena visual
+          spacing={{ base: 6, md: 6 }}
+          minChildWidth="340px" // opcional, ayuda a mantener buena visual
         >
           {products.map((prod) => (
             <ProductCard

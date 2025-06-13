@@ -89,7 +89,7 @@ const MainSlider = () => {
               <Stack spacing={4}>
                 <Heading size="2xl">{slide.title}</Heading>
                 <Text fontSize="md">{slide.description}</Text>
-                <Button variant="outline" colorScheme="whiteAlpha">
+                <Button colorScheme="blue">
                   Shop now
                 </Button>
               </Stack>
