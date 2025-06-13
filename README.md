@@ -24,10 +24,30 @@ Other dependencies include FontAwesome icons and Framer Motion for small animati
 
 ```
 src/
-  components/      # UI components only
-  hooks/           # reusable hooks with business logic
-  services/        # API and external interactions
-  components/Service/asyncMock.js # mock data (legacy)
+  features/
+    products/
+      components/
+      hooks/
+      services/
+      tests/
+    cart/
+      components/
+      hooks/
+      services/
+      tests/
+    wishlist/
+      components/
+      hooks/
+      services/
+      tests/
+    auth/
+      components/
+      hooks/
+      services/
+      tests/
+  components/      # shared UI elements (layout, navbar, etc.)
+  hooks/           # generic reusable hooks
+  services/        # shared utilities (e.g. apiClient)
 ```
 
 Components consume hooks and should avoid data fetching or direct business logic. Hooks use services to interact with APIs or mocks.
@@ -51,7 +71,7 @@ This helper provides:
 Services such as `productService` wrap these helpers and expose domain specific functions:
 
 ```javascript
-import { getProducts } from './services/productService';
+import { getProducts } from './features/products/services/productService';
 
 const { promise, cancel } = getProducts({ retries: 2 });
 promise.then(setProducts).catch(console.error);

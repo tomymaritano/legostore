@@ -34,10 +34,10 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/legologo.svg";
 import { useEffect, useState } from "react";
-import useCart from "../../hooks/useCart";
-import useWishlist from "../../hooks/useWishlist";
-import CartDrawer from "../Cart/CartDrawer";
-import { getProducts } from "../../services/productService";
+import useCart from "../../features/cart/hooks/useCart";
+import useWishlist from "../../features/wishlist/hooks/useWishlist";
+import CartDrawer from "../../features/cart/components/Cart/CartDrawer";
+import { getProducts } from "../../features/products/services/productService";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const NavBar = () => {
