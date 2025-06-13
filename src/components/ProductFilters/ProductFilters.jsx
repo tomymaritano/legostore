@@ -16,7 +16,6 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
 import ProductFiltersHeader from "../ProductFIltersHeader/ProductFiltersHeader";
 import {
-  getProductsByFilters,
   getTotalProductsByFilterKey,
   getProductsByFiltersExceptKey, // <- IMPORTAR ESTO
 } from "../../services/productService";
