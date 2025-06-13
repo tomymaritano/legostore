@@ -1,7 +1,5 @@
 import {
   Box,
-  IconButton,
-  Badge,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -17,10 +15,9 @@ import {
   HStack,
   Image,
 } from "@chakra-ui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import { CartContext } from "../CartContext/CartContext";
+import NavWishlistButton from "../../Layout/Navbar/NavWishlistButton";
 import { Link as RouterLink } from "react-router-dom";
 
 const WishlistPopover = () => {
@@ -29,29 +26,7 @@ const WishlistPopover = () => {
   return (
     <Popover trigger="hover" placement="bottom-end">
       <PopoverTrigger>
-        <Box position="relative" cursor="pointer">
-          <IconButton
-            aria-label="Ver favoritos"
-            icon={<FontAwesomeIcon icon={faHeart} />}
-            variant="ghost"
-            size="md"
-            borderRadius="full"
-            _hover={{ bg: "gray.100" }}
-          />
-          {totalWishlistQuantity > 0 && (
-            <Badge
-              colorScheme="red"
-              borderRadius="full"
-              position="absolute"
-              top="0"
-              right="0"
-              fontSize="0.7em"
-              px={1}
-            >
-              {totalWishlistQuantity}
-            </Badge>
-          )}
-        </Box>
+        <NavWishlistButton total={totalWishlistQuantity} />
       </PopoverTrigger>
 
       <PopoverContent w="320px" zIndex="popover">
