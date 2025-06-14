@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { CartContext } from '../components/CartContext/CartContext';
+import { WishlistContext } from '../components/WishlistContext/WishlistContext';
 
 export default function useWishlist() {
   const {
@@ -9,7 +9,7 @@ export default function useWishlist() {
     removeFromWishlist,
     clearWishlist,
     isInWishlist,
-  } = useContext(CartContext);
+  } = useContext(WishlistContext);
 
   return {
     wishlist,

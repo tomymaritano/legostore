@@ -35,20 +35,18 @@ const ProductCard = ({
   isNew,
   isOnSale,
 }) => {
-  const { cart, addItem } = useCart();
-  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { cart, addItem, isInCart } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
   const location = useLocation();
 
-  const isInWishlist = wishlist.some((prod) => prod.id === id);
+  const inWishlist = isInWishlist(id);
 const [activeImage, setActiveImage] = useState(
   images?.[0] || image || img
 );
 
   const handleAddToCart = () => {
-    const isInCart = cart.some((prod) => prod.id === id);
-
-    if (isInCart) {
+    if (isInCart(id)) {
       toast({
         title: "Producto ya en el carrito.",
         description: `${name} ya estaba en tu carrito.`,
@@ -73,7 +71,7 @@ const [activeImage, setActiveImage] = useState(
   };
 
   const handleToggleWishlist = () => {
-    if (isInWishlist) {
+    if (inWishlist) {
       removeFromWishlist(id);
       toast({
         title: "Removido de favoritos.",
@@ -155,8 +153,8 @@ const [activeImage, setActiveImage] = useState(
         <ProductCardBadge isNew={isNew} isOnSale={isOnSale} />
 
         <IconButton
-          icon={isInWishlist ? <FaHeart /> : <FaRegHeart />}
-          colorScheme={isInWishlist ? "pink" : "gray"}
+          icon={inWishlist ? <FaHeart /> : <FaRegHeart />}
+          colorScheme={inWishlist ? "pink" : "gray"}
           variant="ghost"
           size="sm"
           position="absolute"

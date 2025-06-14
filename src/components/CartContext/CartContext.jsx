@@ -1,122 +1,62 @@
-import { createContext, useState } from "react";
+import { createContext, useReducer, useMemo, useCallback } from 'react';
+import { cartReducer, initialCartState } from '../../reducers/cartReducer';
 
-export const CartContext = createContext({
-  cart: [],
-  wishlist: [],
-});
+export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const [cart, dispatch] = useReducer(cartReducer, initialCartState);
 
-  // --- Cart totals --- //
-  const totalQuantity = cart.reduce(
-    (acc, item) => acc + (Number(item.quantity) || 0),
-    0
+  const totalQuantity = useMemo(
+    () => cart.reduce((acc, item) => acc + (Number(item.quantity) || 0), 0),
+    [cart]
   );
 
-  const totalPrice = cart.reduce(
-    (acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
-    0
+  const totalPrice = useMemo(
+    () =>
+      cart.reduce(
+        (acc, item) =>
+          acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+        0
+      ),
+    [cart]
   );
 
-  const totalWishlistQuantity = wishlist.length;
-
-  // --- Cart methods --- //
-  const isInCart = (itemId) => cart.some((item) => item.id === itemId);
-
-  const addItem = (item, quantity) => {
-    setCart((prevCart) => {
-      if (!isInCart(item.id)) {
-        return [...prevCart, { ...item, quantity }];
-      }
-      return prevCart.map((prod) =>
-        prod.id === item.id
-          ? { ...prod, quantity: prod.quantity + quantity }
-          : prod
-      );
-    });
-  };
-
-  const increaseQuantity = (itemId) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              quantity: Math.max((Number(item.quantity) || 1) + 1, 1),
-            }
-          : item
-      )
-    );
-  };
-
-  const decreaseQuantity = (itemId) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              quantity: Math.max((Number(item.quantity) || 1) - 1, 1),
-            }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (itemId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  // --- Wishlist methods --- //
-  const isInWishlist = (itemId) => wishlist.some((item) => item.id === itemId);
-
-  const addToWishlist = (item) => {
-    setWishlist((prevWishlist) => {
-      if (!isInWishlist(item.id)) {
-        return [...prevWishlist, item];
-      }
-      return prevWishlist;
-    });
-  };
-
-  const removeFromWishlist = (itemId) => {
-    setWishlist((prevWishlist) =>
-      prevWishlist.filter((item) => item.id !== itemId)
-    );
-  };
-
-  const clearWishlist = () => {
-    setWishlist([]);
-  };
-
-  return (
-    <CartContext.Provider
-      value={{
-        // Cart
-        cart,
-        totalQuantity,
-        totalPrice,
-        addItem,
-        removeItem,
-        clearCart,
-        increaseQuantity,
-        decreaseQuantity,
-        isInCart,
-        // Wishlist
-        wishlist,
-        totalWishlistQuantity,
-        addToWishlist,
-        removeFromWishlist,
-        clearWishlist,
-        isInWishlist,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
+  const addItem = useCallback(
+    (item, quantity) =>
+      dispatch({ type: 'ADD_ITEM', payload: { item, quantity } }),
+    []
   );
+
+  const removeItem = useCallback((id) => dispatch({ type: 'REMOVE_ITEM', payload: id }), []);
+
+  const clearCart = useCallback(() => dispatch({ type: 'CLEAR_CART' }), []);
+
+  const increaseQuantity = useCallback(
+    (id) => dispatch({ type: 'INCREASE_QUANTITY', payload: id }),
+    []
+  );
+
+  const decreaseQuantity = useCallback(
+    (id) => dispatch({ type: 'DECREASE_QUANTITY', payload: id }),
+    []
+  );
+
+  const isInCart = useCallback((id) => cart.some((item) => item.id === id), [cart]);
+
+  const value = useMemo(
+    () => ({
+      cart,
+      totalQuantity,
+      totalPrice,
+      addItem,
+      removeItem,
+      clearCart,
+      increaseQuantity,
+      decreaseQuantity,
+      isInCart,
+    }),
+    [cart, totalQuantity, totalPrice, addItem, removeItem, clearCart, increaseQuantity, decreaseQuantity, isInCart]
+  );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

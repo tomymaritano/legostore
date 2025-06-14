@@ -30,15 +30,15 @@ const ItemDetail = ({ product }) => {
     rating,
   } = product;
 
-  const { cart, addItem } = useCart();
-  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { cart, addItem, isInCart } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
 
-  const isInWishlist = wishlist.some((prod) => prod.id === id);
-  const isInCart = cart.some((prod) => prod.id === id);
+  const inWishlist = isInWishlist(id);
+  const inCart = isInCart(id);
 
   const handleAddToCart = () => {
-    if (isInCart) {
+    if (inCart) {
       toast({
         title: "Producto ya en el carrito.",
         description: `${name} ya estaba en tu carrito.`,
@@ -61,7 +61,7 @@ const ItemDetail = ({ product }) => {
   };
 
   const handleToggleWishlist = () => {
-    if (isInWishlist) {
+    if (inWishlist) {
       removeFromWishlist(id);
       toast({
         title: "Removido de favoritos.",
@@ -163,8 +163,8 @@ const ItemDetail = ({ product }) => {
             {name}
           </Heading>
           <IconButton
-            icon={isInWishlist ? <FaHeart /> : <FaRegHeart />}
-            colorScheme={isInWishlist ? "pink" : "gray"}
+            icon={inWishlist ? <FaHeart /> : <FaRegHeart />}
+            colorScheme={inWishlist ? "pink" : "gray"}
             variant="ghost"
             size="lg"
             onClick={handleToggleWishlist}
