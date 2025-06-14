@@ -1,7 +1,6 @@
 import {
   Container,
   Heading,
-  Spinner,
   Center,
   Text,
   Box,
@@ -22,62 +21,36 @@ import useProducts from "../../hooks/useProducts";
 import ProductList from "../ProductList/ProductList";
 import ProductFilters from "../ProductFilters/ProductFilters";
 import { motion } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const MotionBox = motion(Box);
 
 const ItemListContainer = ({ greeting }) => {
   const [sortOption, setSortOption] = useState("recommended");
-  const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
   const { categoryId } = useParams();
-
-  const [searchParams, setSearchParams] = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const parseFiltersFromParams = () => ({
-    type: searchParams.getAll("type"),
-    age: searchParams.getAll("age"),
-    theme: searchParams.getAll("theme"),
-    interests: searchParams.getAll("interests"),
-    pieces: searchParams.getAll("pieces"),
-    highlight: searchParams.getAll("highlight"),
-  });
-
-  const [filters, setFilters] = useState(parseFiltersFromParams);
-
-  useEffect(() => {
-    setFilters(parseFiltersFromParams());
-  }, [searchParams]);
-
-  useEffect(() => {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, values]) => {
-      values.forEach((val) => params.append(key, val));
-    });
-    setSearchParams(params, { replace: true });
-    setCurrentPage(1); // Reset page cuando cambian filtros
-  }, [filters, setSearchParams]);
 
   const {
     products,
-    filteredProducts,
-    paginatedProducts,
     totalPages,
-    loading,
+    isLoading,
+    isFetching,
+    filters,
+    setFilters,
+    page,
+    setPage,
   } = useProducts({
     categoryId,
-    filters,
     sortOption,
-    currentPage,
     productsPerPage,
   });
+
 
   // Scroll to top cuando cambio filtros o sort o page
   useEffect(() => {
     window.scrollTo({ top: 200, behavior: "smooth" });
-  }, [filters, sortOption, currentPage]);
+  }, [filters, sortOption, page]);
 
   const totalFiltersApplied = Object.values(filters).reduce(
     (acc, arr) => acc + arr.length,
@@ -99,7 +72,7 @@ const ItemListContainer = ({ greeting }) => {
         </Heading>
       )}
 
-      {loading ? (
+      {isLoading || isFetching ? (
         <Flex gap={6} wrap="wrap" justify="center">
           {Array.from({ length: 9 }).map((_, i) => (
             <Skeleton key={i} height="450px" width="300px" borderRadius="lg" />
@@ -122,8 +95,7 @@ const ItemListContainer = ({ greeting }) => {
             <ProductFilters
               filters={filters}
               setFilters={setFilters}
-              filteredProducts={filteredProducts}
-              products={products} // ✅ agregar esta prop aquí también (muy importante!)
+              products={products}
             />
           </Box>
 
@@ -138,8 +110,7 @@ const ItemListContainer = ({ greeting }) => {
             >
               <Flex flexDir="column">
                 <Text fontSize="lg" fontWeight="bold">
-                  Mostrando {filteredProducts.length} productos de{" "}
-                  {products.length}
+                  Mostrando {products.length} productos
                 </Text>
                 {totalFiltersApplied > 0 && (
                   <Text fontSize="sm" color="teal.600">
@@ -177,7 +148,7 @@ const ItemListContainer = ({ greeting }) => {
               </Flex>
             </Flex>
 
-            {paginatedProducts.length === 0 ? (
+            {products.length === 0 ? (
               <Center flexDir="column" py={20} color="gray.500">
                 <Image
                   src="https://cdn-icons-png.flaticon.com/512/192/192292.png"
@@ -193,42 +164,39 @@ const ItemListContainer = ({ greeting }) => {
             ) : (
               <>
                 <MotionBox
-                  key={JSON.stringify(filters) + sortOption + currentPage}
+                  key={JSON.stringify(filters) + sortOption + page}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <ProductList products={paginatedProducts} />
+                  <ProductList products={products} />
                 </MotionBox>
 
                 {/* Paginación */}
                 <Flex justify="center" mt={8} gap={2}>
                   <Button
                     size="sm"
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    isDisabled={currentPage === 1}
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    isDisabled={page === 1}
                     aria-label="Página anterior"
                   >
                     Anterior
                   </Button>
                   <Text fontSize="sm" fontWeight="medium">
-                    Página {currentPage} / {totalPages}
+                    Página {page} / {totalPages}
                   </Text>
                   <Button
                     size="sm"
                     onClick={() =>
-                      setCurrentPage((p) =>
+                      setPage((p) =>
                         Math.min(
                           p + 1,
                           totalPages
                         )
                       )
                     }
-                    isDisabled={
-                      currentPage ===
-                      totalPages
-                    }
+                    isDisabled={page === totalPages}
                     aria-label="Página siguiente"
                   >
                     Siguiente
@@ -249,8 +217,7 @@ const ItemListContainer = ({ greeting }) => {
             <ProductFilters
               filters={filters}
               setFilters={setFilters}
-              filteredProducts={filteredProducts}
-              products={products} // ✅ agregar esta prop
+              products={products}
             />
           </DrawerBody>
         </DrawerContent>

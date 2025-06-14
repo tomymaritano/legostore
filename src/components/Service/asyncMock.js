@@ -369,3 +369,64 @@ export const getProductsByFiltersExceptKey = (filters, exceptKey, allProducts) =
         });
     });
 };
+
+export const getProductsPaginated = ({ page = 1, limit = 9, categoryId, filters = {}, sortOption }) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let result = products;
+
+      if (categoryId) {
+        result = result.filter(
+          (p) => p.category.toLowerCase() === categoryId.toLowerCase()
+        );
+      }
+
+      if (filters) {
+        result = result.filter((product) => {
+          const matchesType = !filters.type?.length || filters.type.includes(product.type);
+          const matchesAge = !filters.age?.length || filters.age.includes(product.age);
+          const matchesTheme = !filters.theme?.length || filters.theme.includes(product.theme);
+          const matchesInterests =
+            !filters.interests?.length ||
+            filters.interests.some((interest) => product.interests.includes(interest));
+          const matchesPieces = !filters.pieces?.length || filters.pieces.includes(product.pieces);
+          const matchesHighlight =
+            !filters.highlight?.length || filters.highlight.includes(product.highlight);
+
+          return (
+            matchesType &&
+            matchesAge &&
+            matchesTheme &&
+            matchesInterests &&
+            matchesPieces &&
+            matchesHighlight
+          );
+        });
+      }
+
+      const sorted = [...result];
+      switch (sortOption) {
+        case "price_low_high":
+          sorted.sort((a, b) => a.price - b.price);
+          break;
+        case "price_high_low":
+          sorted.sort((a, b) => b.price - a.price);
+          break;
+        case "name_asc":
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "name_desc":
+          sorted.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        default:
+          break;
+      }
+
+      const total = sorted.length;
+      const start = (page - 1) * limit;
+      const paginated = sorted.slice(start, start + limit);
+
+      resolve({ products: paginated, total });
+    }, 500);
+  });
+};

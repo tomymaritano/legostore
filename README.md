@@ -54,3 +54,22 @@ cancel();
 ```
 
 Components never call `fetch` directly; they consume hooks which use these services internally.
+
+## Pagination and caching with React Query
+
+The product catalog uses **React Query** for data fetching and local caching.
+`useProducts` issues paginated requests with a stable query key so results are
+cached per page and filter combination. Pagination state is kept in the URL via
+`useSearchParams` and page changes show a skeleton loader while previous data
+remains visible thanks to `keepPreviousData`.
+
+`getProductsPaginated` in `productService` returns the current page of products
+and the total count so the hook can compute total pages without downloading the
+entire catalog.
+
+## State management
+
+The app keeps cart and wishlist data in React context providers. Business logic
+is exposed through hooks (`useCart`, `useWishlist`) so UI components only access
+what they need. Each provider memoizes its value to avoid unnecessary rerenders,
+and cart and wishlist state are kept separate to further minimise updates.
