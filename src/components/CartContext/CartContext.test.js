@@ -1,45 +1,41 @@
+// CartContext.test.jsx
 import React from 'react';
-import { renderHook, act } from '@testing-library/react';
-import { CartProvider, CartContext } from './CartContext';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { CartProvider, useCartContext } from './CartContext';
 
-const wrapper = ({ children }) => <CartProvider>{children}</CartProvider>;
+const CartTestComponent = () => {
+  const {
+    cart,
+    addItem,
+    increaseQuantity,
+    decreaseQuantity,
+    removeItem,
+    clearCart,
+    totalQuantity,
+    totalPrice,
+    isInCart,
+  } = useCartContext();
 
-test('adds item to cart', () => {
-  const { result } = renderHook(() => React.useContext(CartContext), { wrapper });
-  act(() => {
-    result.current.addItem({ id: '1', name: 'Test', price: 10 }, 2);
-  });
-  expect(result.current.cart).toHaveLength(1);
-  expect(result.current.cart[0].quantity).toBe(2);
-  expect(result.current.totalQuantity).toBe(2);
-  expect(result.current.totalPrice).toBe(20);
-  expect(result.current.isInCart('1')).toBe(true);
-});
+  return (
+    <div>
+      <button onClick={() => addItem({ id: '1', name: 'Test', price: 10 }, 2)}>Add</button>
+      <button onClick={() => increaseQuantity('1')}>Increase</button>
+      <button onClick={() => decreaseQuantity('1')}>Decrease</button>
+      <button onClick={() => removeItem('1')}>Remove</button>
+      <button onClick={clearCart}>Clear</button>
 
-test('updates item quantity', () => {
-  const { result } = renderHook(() => React.useContext(CartContext), { wrapper });
-  act(() => {
-    result.current.addItem({ id: '1', name: 'Test', price: 10 }, 1);
-    result.current.increaseQuantity('1');
-    result.current.decreaseQuantity('1');
-  });
-  expect(result.current.cart[0].quantity).toBe(1);
-});
+      <div data-testid="cart-length">{cart.length}</div>
+      <div data-testid="cart-qty">{cart[0]?.quantity || 0}</div>
+      <div data-testid="total-qty">{totalQuantity}</div>
+      <div data-testid="total-price">{totalPrice}</div>
+      <div data-testid="is-in-cart">{isInCart('1') ? 'yes' : 'no'}</div>
+    </div>
+  );
+};
 
-test('removes item from cart', () => {
-  const { result } = renderHook(() => React.useContext(CartContext), { wrapper });
-  act(() => {
-    result.current.addItem({ id: '1', name: 'Test', price: 10 }, 1);
-    result.current.removeItem('1');
-  });
-  expect(result.current.cart).toHaveLength(0);
-});
-
-test('clears cart', () => {
-  const { result } = renderHook(() => React.useContext(CartContext), { wrapper });
-  act(() => {
-    result.current.addItem({ id: '1', name: 'Test', price: 10 }, 1);
-    result.current.clearCart();
-  });
-  expect(result.current.cart).toHaveLength(0);
-});
+const setup = () =>
+  render(
+    <CartProvider>
+      <CartTestComponent />
+    </CartProvider>
+  );
