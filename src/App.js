@@ -4,6 +4,7 @@ import ItemListContainer from "./components/ItemListContainer/ItemListContainer"
 import ItemDetailContainer from "./components/ItemDetailContainer/ItemDetailContainer";
 import Cart from "./components/Cart/Cart";
 import { CartProvider } from "./components/CartContext/CartContext";
+import { WishlistProvider } from "./components/WishlistContext/WishlistContext";
 import NotFound from "./components/NotFound/NotFound";
 import Layout from "./components/Layout/Layout";
 import Wishlist from "./components/Wishlist/Wishlist";
@@ -14,7 +15,9 @@ function AppWrapper() {
   return (
     <BrowserRouter>
       <CartProvider>
-        <AppContent />
+        <WishlistProvider>
+          <AppContent />
+        </WishlistProvider>
       </CartProvider>
     </BrowserRouter>
   );
