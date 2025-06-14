@@ -1,44 +1,53 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useCallback, useMemo } from "react";
 
 export const CartContext = createContext({
   cart: [],
-  wishlist: [],
+  totalQuantity: 0,
+  totalPrice: 0,
+  addItem: () => {},
+  removeItem: () => {},
+  clearCart: () => {},
+  increaseQuantity: () => {},
+  decreaseQuantity: () => {},
+  isInCart: () => false,
 });
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
 
   // --- Cart totals --- //
-  const totalQuantity = cart.reduce(
-    (acc, item) => acc + (Number(item.quantity) || 0),
-    0
+  const totalQuantity = useMemo(
+    () => cart.reduce((acc, item) => acc + (Number(item.quantity) || 0), 0),
+    [cart]
   );
 
-  const totalPrice = cart.reduce(
-    (acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
-    0
+  const totalPrice = useMemo(
+    () =>
+      cart.reduce(
+        (acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.price) || 0),
+        0
+      ),
+    [cart]
   );
-
-  const totalWishlistQuantity = wishlist.length;
 
   // --- Cart methods --- //
-  const isInCart = (itemId) => cart.some((item) => item.id === itemId);
+  const isInCart = useCallback(
+    (itemId) => cart.some((item) => item.id === itemId),
+    [cart]
+  );
 
-  const addItem = (item, quantity) => {
+  const addItem = useCallback((item, quantity) => {
     setCart((prevCart) => {
-      if (!isInCart(item.id)) {
+      if (!prevCart.some((p) => p.id === item.id)) {
         return [...prevCart, { ...item, quantity }];
       }
       return prevCart.map((prod) =>
-        prod.id === item.id
-          ? { ...prod, quantity: prod.quantity + quantity }
-          : prod
+        prod.id === item.id ? { ...prod, quantity: prod.quantity + quantity } : prod
       );
     });
-  };
+  }, []);
 
-  const increaseQuantity = (itemId) => {
+  const increaseQuantity = useCallback((itemId) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === itemId
@@ -49,9 +58,9 @@ export const CartProvider = ({ children }) => {
           : item
       )
     );
-  };
+  }, []);
 
-  const decreaseQuantity = (itemId) => {
+  const decreaseQuantity = useCallback((itemId) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === itemId
@@ -62,60 +71,34 @@ export const CartProvider = ({ children }) => {
           : item
       )
     );
-  };
+  }, []);
 
-  const removeItem = (itemId) => {
+  const removeItem = useCallback((itemId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
 
-  // --- Wishlist methods --- //
-  const isInWishlist = (itemId) => wishlist.some((item) => item.id === itemId);
 
-  const addToWishlist = (item) => {
-    setWishlist((prevWishlist) => {
-      if (!isInWishlist(item.id)) {
-        return [...prevWishlist, item];
-      }
-      return prevWishlist;
-    });
-  };
-
-  const removeFromWishlist = (itemId) => {
-    setWishlist((prevWishlist) =>
-      prevWishlist.filter((item) => item.id !== itemId)
-    );
-  };
-
-  const clearWishlist = () => {
-    setWishlist([]);
-  };
+  const value = useMemo(
+    () => ({
+      cart,
+      totalQuantity,
+      totalPrice,
+      addItem,
+      removeItem,
+      clearCart,
+      increaseQuantity,
+      decreaseQuantity,
+      isInCart,
+    }),
+    [cart, totalQuantity, totalPrice, addItem, removeItem, clearCart, increaseQuantity, decreaseQuantity, isInCart]
+  );
 
   return (
-    <CartContext.Provider
-      value={{
-        // Cart
-        cart,
-        totalQuantity,
-        totalPrice,
-        addItem,
-        removeItem,
-        clearCart,
-        increaseQuantity,
-        decreaseQuantity,
-        isInCart,
-        // Wishlist
-        wishlist,
-        totalWishlistQuantity,
-        addToWishlist,
-        removeFromWishlist,
-        clearWishlist,
-        isInWishlist,
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

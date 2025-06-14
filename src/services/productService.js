@@ -5,6 +5,7 @@ import {
   getProductsByFilters as mockGetProductsByFilters,
   getTotalProductsByFilterKey as mockGetTotalProductsByFilterKey,
   getProductsByFiltersExceptKey as mockGetProductsByFiltersExceptKey,
+  getProductsPaginated as mockGetProductsPaginated,
   FILTER_CONFIG,
 } from '../components/Service/asyncMock';
 
@@ -60,6 +61,12 @@ export const getTotalProductsByFilterKey = (key, products, opts) =>
 export const getProductsByFiltersExceptKey = (filters, exceptKey, products, opts) =>
   wrapRequest(() => mockGetProductsByFiltersExceptKey(filters, exceptKey, products), opts);
 
+export const getProductsPaginated = ({ page, limit, categoryId, filters, sortOption }, opts) =>
+  wrapRequest(
+    () => mockGetProductsPaginated({ page, limit, categoryId, filters, sortOption }),
+    opts
+  );
+
 export const productService = {
   getProducts,
   getProductById,
@@ -67,6 +74,7 @@ export const productService = {
   getProductsByFilters,
   getTotalProductsByFilterKey,
   getProductsByFiltersExceptKey,
+  getProductsPaginated,
   FILTER_CONFIG,
 };
 
