@@ -1,15 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '../../test.utils';
 import App from '../../App';
-import theme from './theme';
-
-const customTheme = extendTheme(theme);
 
 test('renders navbar link', () => {
-  render(
-    <ChakraProvider theme={customTheme}>
-      <App />
-    </ChakraProvider>
-  );
+  renderWithProviders(<App />);
   expect(screen.getByText(/Helmet/i)).toBeInTheDocument();
 });
